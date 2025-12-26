@@ -1,0 +1,1728 @@
+/* ========================================
+   线条小狗风格 - 800天浪漫纪念网站
+   Cute Pastel Dog Theme
+   ======================================== */
+
+/* CSS变量 - 可爱柔和配色 */
+:root {
+    /* 主色调 - 柔和天蓝 */
+    --sky-light: #E8F4F8;
+    --sky-main: #B5E2EA;
+    --sky-deep: #7FCAD8;
+    --sky-accent: #5BB5C5;
+    
+    /* 辅助色 - 柔和粉色 */
+    --pink-light: #FFE4EC;
+    --pink-main: #FFB6C8;
+    --pink-deep: #FF8FA3;
+    --pink-heart: #FF6B8A;
+    
+    /* 奶油色/米色 */
+    --cream: #FFF9F0;
+    --cream-dark: #F5EBD8;
+    --warm-white: #FFFCF7;
+    
+    /* 小狗颜色 */
+    --dog-white: #FEFEFE;
+    --dog-brown: #D4A574;
+    --dog-brown-dark: #B8956A;
+    --dog-nose: #3D3D3D;
+    
+    /* 草地绿 */
+    --grass-light: #C5E8B7;
+    --grass-main: #9ED68C;
+    --grass-dark: #7BC469;
+    
+    /* 星星月亮 */
+    --star-yellow: #FFE566;
+    --moon-cream: #FFF7CC;
+    
+    /* 文字色 */
+    --text-dark: #4A4A4A;
+    --text-medium: #6B6B6B;
+    --text-light: #8B8B8B;
+    
+    /* 字体 */
+    --font-cute: 'ZCOOL KuaiLe', 'Comic Sans MS', cursive;
+    --font-body: 'ZCOOL XiaoWei', 'Microsoft YaHei', sans-serif;
+    --font-handwritten: 'Ma Shan Zheng', cursive;
+}
+
+/* 引入可爱字体 */
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=Ma+Shan+Zheng&display=swap');
+
+/* 全局重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--sky-light);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.8;
+}
+
+/* 可爱背景图案 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(255, 182, 200, 0.3) 0%, transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(181, 226, 234, 0.4) 0%, transparent 30%),
+        radial-gradient(circle at 50% 50%, rgba(197, 232, 183, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 格子背景图案 */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(181, 226, 234, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(181, 226, 234, 0.3) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+}
+
+/* ========================================
+   可爱小狗装饰
+   ======================================== */
+.cute-dog {
+    position: fixed;
+    font-size: 60px;
+    z-index: 1;
+    animation: dogFloat 4s ease-in-out infinite;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+}
+
+.cute-dog.dog-1 {
+    bottom: 20px;
+    left: 20px;
+    animation-delay: 0s;
+}
+
+.cute-dog.dog-2 {
+    bottom: 20px;
+    right: 20px;
+    animation-delay: 2s;
+}
+
+@keyframes dogFloat {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+/* ========================================
+   粒子效果 - 星星和爱心
+   ======================================== */
+#particles-container,
+#hearts-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    font-size: 16px;
+    animation: starFloat linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes starFloat {
+    0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 0;
+    }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.floating-heart {
+    position: absolute;
+    font-size: 24px;
+    animation: heartBounce ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes heartBounce {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-100px) scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-200px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* ========================================
+   开场信封动画 - 可爱版
+   ======================================== */
+#opening-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, var(--sky-light) 0%, var(--sky-main) 50%, var(--grass-light) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+/* 云朵装饰 */
+#opening-overlay::before {
+    content: '☁️';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    font-size: 80px;
+    opacity: 0.6;
+    animation: cloudFloat 6s ease-in-out infinite;
+}
+
+#opening-overlay::after {
+    content: '☁️';
+    position: absolute;
+    top: 15%;
+    right: 15%;
+    font-size: 60px;
+    opacity: 0.5;
+    animation: cloudFloat 8s ease-in-out infinite reverse;
+}
+
+@keyframes cloudFloat {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(30px); }
+}
+
+#opening-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.envelope-container {
+    text-align: center;
+    cursor: pointer;
+    z-index: 1;
+    position: relative;
+    padding-top: 50px;
+}
+
+/* 可爱信封 */
+.envelope {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    margin: 0 auto;
+    margin-top: 55vh;
+    perspective: 1500px;
+}
+
+.envelope-body {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--pink-light), var(--pink-main));
+    border-radius: 20px;
+    box-shadow: 
+        0 15px 40px rgba(255, 107, 138, 0.3),
+        inset 0 0 30px rgba(255, 255, 255, 0.5);
+    overflow: visible;
+    border: 4px solid white;
+    z-index: 1;
+}
+
+.envelope-body::before {
+    content: '🐕💕🐕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    opacity: 0.5;
+    z-index: 2;
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 110px;
+    background: linear-gradient(135deg, var(--sky-main), var(--sky-deep));
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    transform-origin: top center;
+    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 5;
+    border: 4px solid white;
+}
+
+.envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 0;
+}
+
+/* 可爱信件 - 适合屏幕大小 */
+.letter {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    width: 600px;
+    max-width: 85vw;
+    height: auto;
+    max-height: 75vh;
+    background: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s;
+    z-index: 10;
+    overflow-y: auto;
+    border: 5px solid var(--pink-main);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 信纸装饰线 - 非常淡 */
+.letter::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 38px,
+        rgba(255, 182, 200, 0.12) 38px,
+        rgba(255, 182, 200, 0.12) 39px
+    );
+    pointer-events: none;
+}
+
+.envelope.open .letter {
+    transform: translateX(-50%) translateY(-480px);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.letter-content {
+    padding: 40px 50px;
+    position: relative;
+    z-index: 1;
+    background: #FFFFFF;
+}
+
+.letter-content h2 {
+    font-family: var(--font-cute);
+    font-size: 36px;
+    color: #E91E63;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.letter-date {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+    margin-bottom: 25px;
+    font-family: var(--font-cute);
+}
+
+.letter-text {
+    font-family: var(--font-body);
+    font-size: 20px;
+    line-height: 2.2;
+    color: #222;
+}
+
+.letter-text p {
+    margin-bottom: 16px;
+}
+
+.letter-text .highlight {
+    color: #E91E63;
+    font-size: 42px;
+    font-weight: bold;
+    background: linear-gradient(180deg, transparent 50%, rgba(255, 229, 102, 0.6) 50%);
+    padding: 0 6px;
+}
+
+.letter-text .love-declaration {
+    color: #C41E3A;
+    font-weight: bold;
+    padding: 12px 18px;
+    background: rgba(255, 182, 200, 0.5);
+    border-radius: 12px;
+    display: block;
+    margin: 16px 0;
+    font-size: 18px;
+}
+
+.letter-text .signature {
+    text-align: right;
+    margin-top: 25px;
+    color: #666;
+    font-style: italic;
+    font-size: 18px;
+}
+
+.click-hint {
+    margin-top: 40px;
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: #666;
+    animation: bounce 2s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ========================================
+   主内容区
+   ======================================== */
+#main-content {
+    position: relative;
+    z-index: 2;
+}
+
+#main-content.hidden {
+    display: none;
+}
+
+/* ========================================
+   可爱导航栏
+   ======================================== */
+#navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 12px 40px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    border-bottom: 3px solid var(--pink-light);
+    box-shadow: 0 4px 20px rgba(255, 182, 200, 0.3);
+}
+
+#navbar ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+#navbar .nav-link {
+    font-family: var(--font-cute);
+    font-size: 16px;
+    color: var(--text-dark);
+    text-decoration: none;
+    padding: 8px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: 2px solid transparent;
+}
+
+#navbar .nav-link:hover,
+#navbar .nav-link.active {
+    background: var(--pink-light);
+    color: var(--pink-heart);
+    border-color: var(--pink-main);
+    transform: scale(1.05);
+}
+
+.music-btn {
+    position: absolute;
+    right: 40px;
+    background: var(--sky-light);
+    border: 3px solid var(--sky-main);
+    color: var(--sky-accent);
+    padding: 8px 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.music-btn:hover {
+    background: var(--sky-main);
+    transform: scale(1.1);
+}
+
+.music-btn.playing {
+    animation: musicWiggle 0.5s ease infinite;
+    background: var(--pink-light);
+    border-color: var(--pink-main);
+}
+
+@keyframes musicWiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+/* ========================================
+   首页区域 - 可爱版
+   ======================================== */
+#hero {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 20px;
+    position: relative;
+    background: linear-gradient(180deg, var(--sky-light) 0%, var(--sky-main) 70%, var(--grass-light) 100%);
+}
+
+/* 草地 */
+#hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    background: 
+        radial-gradient(ellipse at 20% 100%, var(--grass-main) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, var(--grass-main) 0%, transparent 50%),
+        linear-gradient(0deg, var(--grass-light) 0%, transparent 100%);
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 1;
+    max-width: 800px;
+}
+
+/* 800天徽章 - 可爱版 */
+.anniversary-badge {
+    display: inline-block;
+    padding: 20px 50px;
+    background: linear-gradient(135deg, var(--star-yellow), var(--moon-cream));
+    border-radius: 50px;
+    margin-bottom: 25px;
+    box-shadow: 
+        0 8px 30px rgba(255, 229, 102, 0.5),
+        inset 0 -4px 0 rgba(0,0,0,0.1);
+    animation: badgeBounce 3s ease-in-out infinite;
+    border: 4px solid white;
+    cursor: pointer;
+}
+
+@keyframes badgeBounce {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+.badge-text {
+    display: block;
+    font-family: var(--font-cute);
+    font-size: 52px;
+    color: var(--pink-heart);
+    line-height: 1;
+    text-shadow: 2px 2px 0 white;
+}
+
+.badge-subtitle {
+    font-family: var(--font-cute);
+    font-size: 16px;
+    color: var(--text-medium);
+    letter-spacing: 3px;
+}
+
+.main-title {
+    margin-bottom: 15px;
+}
+
+.title-line {
+    display: block;
+    font-family: var(--font-cute);
+    font-size: 56px;
+    color: var(--pink-heart);
+    text-shadow: 
+        3px 3px 0 white,
+        -1px -1px 0 var(--pink-light);
+    letter-spacing: 8px;
+}
+
+.date-display {
+    font-family: var(--font-cute);
+    font-size: 32px;
+    color: var(--sky-accent);
+    margin-bottom: 30px;
+    letter-spacing: 4px;
+    background: white;
+    display: inline-block;
+    padding: 10px 30px;
+    border-radius: 30px;
+    border: 3px solid var(--sky-main);
+}
+
+/* 计时器 - 可爱版 */
+.countdown-section {
+    margin: 30px 0;
+}
+
+.countdown-label {
+    font-family: var(--font-cute);
+    font-size: 20px;
+    color: var(--text-medium);
+    margin-bottom: 15px;
+}
+
+.countdown-numbers {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.count-item {
+    background: white;
+    border: 4px solid var(--pink-main);
+    border-radius: 20px;
+    padding: 15px 20px;
+    min-width: 90px;
+    box-shadow: 0 6px 0 var(--pink-light);
+    transition: transform 0.3s ease;
+}
+
+.count-item:hover {
+    transform: translateY(-5px);
+}
+
+.count-item span:first-child {
+    display: block;
+    font-family: var(--font-cute);
+    font-size: 42px;
+    color: var(--pink-heart);
+    line-height: 1;
+}
+
+.count-label {
+    font-family: var(--font-cute);
+    font-size: 14px;
+    color: var(--text-medium);
+    margin-top: 5px;
+}
+
+/* 节日祝福卡片 - 可爱版 */
+.holiday-wishes {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin: 35px 0;
+}
+
+.wish-card {
+    background: white;
+    border: 3px solid var(--sky-main);
+    border-radius: 20px;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 0 var(--sky-light);
+}
+
+.wish-card:hover {
+    transform: translateY(-8px) rotate(-2deg);
+    box-shadow: 0 12px 20px rgba(91, 181, 197, 0.3);
+}
+
+.wish-icon {
+    font-size: 45px;
+}
+
+.wish-text {
+    font-family: var(--font-cute);
+    font-size: 22px;
+    color: var(--text-dark);
+}
+
+.wish-card.christmas {
+    border-color: var(--grass-main);
+    box-shadow: 0 5px 0 var(--grass-light);
+}
+
+.wish-card.newyear {
+    border-color: var(--star-yellow);
+    box-shadow: 0 5px 0 var(--moon-cream);
+}
+
+/* 滚动提示 */
+.scroll-hint {
+    display: inline-block;
+    margin-top: 40px;
+    color: var(--text-medium);
+    text-decoration: none;
+    font-family: var(--font-cute);
+    transition: all 0.3s ease;
+}
+
+.scroll-hint:hover {
+    color: var(--pink-heart);
+}
+
+.scroll-arrow {
+    width: 25px;
+    height: 25px;
+    margin: 12px auto 0;
+    border-right: 4px solid var(--pink-main);
+    border-bottom: 4px solid var(--pink-main);
+    transform: rotate(45deg);
+    animation: arrowBounce 2s ease infinite;
+}
+
+@keyframes arrowBounce {
+    0%, 100% { transform: rotate(45deg) translateY(0); }
+    50% { transform: rotate(45deg) translateY(10px); }
+}
+
+/* ========================================
+   回忆相册区域 - 动态幻灯片
+   ======================================== */
+#memories {
+    padding: 80px 20px;
+    background: linear-gradient(180deg, var(--grass-light) 0%, var(--sky-light) 30%, var(--cream) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-family: var(--font-cute);
+    font-size: 42px;
+    color: var(--pink-heart);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 0 white;
+}
+
+.section-subtitle {
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: var(--text-medium);
+}
+
+/* 幻灯片控制按钮 */
+.slideshow-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 4px solid var(--pink-main);
+    background: white;
+    color: var(--pink-heart);
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 0 var(--pink-light);
+}
+
+.control-btn:hover {
+    background: var(--pink-main);
+    color: white;
+    transform: translateY(-3px);
+}
+
+.control-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--pink-light);
+}
+
+.slideshow-info {
+    text-align: center;
+}
+
+#photo-counter {
+    font-family: var(--font-cute);
+    font-size: 20px;
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.autoplay-btn {
+    background: var(--sky-light);
+    border: 3px solid var(--sky-main);
+    border-radius: 25px;
+    padding: 8px 20px;
+    font-family: var(--font-cute);
+    font-size: 14px;
+    color: var(--sky-accent);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoplay-btn:hover {
+    background: var(--sky-main);
+    color: white;
+}
+
+.autoplay-btn.playing {
+    background: var(--pink-light);
+    border-color: var(--pink-main);
+    color: var(--pink-heart);
+    animation: playingPulse 2s ease infinite;
+}
+
+@keyframes playingPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 107, 138, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(255, 107, 138, 0.6); }
+}
+
+/* 主照片展示区 */
+.main-slideshow {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.slideshow-container {
+    position: relative;
+}
+
+.photo-frame {
+    position: relative;
+    background: white;
+    border: 8px solid white;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 
+        0 20px 60px rgba(255, 107, 138, 0.3),
+        0 10px 0 var(--pink-light);
+    transition: all 0.5s ease;
+}
+
+.photo-frame:hover {
+    transform: scale(1.02);
+    box-shadow: 
+        0 30px 80px rgba(255, 107, 138, 0.4),
+        0 15px 0 var(--pink-main);
+}
+
+.photo-frame img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+/* 照片切换动画 */
+.photo-frame img.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.photo-frame img.fade-in {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 照片装饰角 */
+.photo-decoration {
+    position: absolute;
+    font-size: 30px;
+    animation: decorationFloat 3s ease-in-out infinite;
+    z-index: 10;
+}
+
+.photo-decoration.top-left {
+    top: 15px;
+    left: 15px;
+}
+
+.photo-decoration.top-right {
+    top: 15px;
+    right: 15px;
+    animation-delay: 0.5s;
+}
+
+.photo-decoration.bottom-left {
+    bottom: 15px;
+    left: 15px;
+    animation-delay: 1s;
+}
+
+.photo-decoration.bottom-right {
+    bottom: 15px;
+    right: 15px;
+    animation-delay: 1.5s;
+}
+
+@keyframes decorationFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(10deg); }
+}
+
+/* 照片说明 */
+.photo-caption-display {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.day-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--star-yellow), var(--moon-cream));
+    color: var(--text-dark);
+    font-family: var(--font-cute);
+    font-size: 22px;
+    padding: 10px 30px;
+    border-radius: 30px;
+    border: 4px solid white;
+    box-shadow: 0 5px 20px rgba(255, 229, 102, 0.4);
+    margin-bottom: 15px;
+}
+
+#photo-message {
+    font-family: var(--font-cute);
+    font-size: 20px;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/* 缩略图滚动条 */
+.thumbnail-strip {
+    margin-top: 40px;
+    padding: 20px 0;
+    overflow: hidden;
+}
+
+.thumbnail-container {
+    display: flex;
+    gap: 15px;
+    animation: thumbnailScroll 60s linear infinite;
+    width: max-content;
+}
+
+.thumbnail-container:hover {
+    animation-play-state: paused;
+}
+
+@keyframes thumbnailScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.thumbnail {
+    width: 100px;
+    height: 100px;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.thumbnail:hover {
+    transform: scale(1.15) rotate(-3deg);
+    border-color: var(--pink-main);
+    box-shadow: 0 8px 25px rgba(255, 107, 138, 0.3);
+    z-index: 10;
+}
+
+.thumbnail.active {
+    border-color: var(--pink-heart);
+    box-shadow: 0 0 20px rgba(255, 107, 138, 0.5);
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 里程碑快速导航 */
+.milestone-quick-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 25px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 5px 0 var(--pink-light);
+}
+
+.nav-label {
+    font-family: var(--font-cute);
+    font-size: 16px;
+    color: var(--text-medium);
+}
+
+.milestone-btn {
+    background: var(--sky-light);
+    border: 3px solid var(--sky-main);
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-family: var(--font-cute);
+    font-size: 14px;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.milestone-btn:hover {
+    background: var(--pink-light);
+    border-color: var(--pink-main);
+    transform: translateY(-3px);
+}
+
+/* 浮动照片效果 */
+.floating-photos-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.floating-photo {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    border: 3px solid white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    opacity: 0.6;
+    animation: floatAround 20s ease-in-out infinite;
+}
+
+.floating-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+@keyframes floatAround {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-30px) rotate(5deg);
+    }
+    50% {
+        transform: translateY(0) rotate(0deg);
+    }
+    75% {
+        transform: translateY(-20px) rotate(-5deg);
+    }
+}
+
+
+/* 秘密消息区域 */
+.secret-section {
+    padding: 60px 20px;
+    background: linear-gradient(180deg, var(--cream) 0%, var(--pink-light) 100%);
+    text-align: center;
+}
+
+.secret-message {
+    padding: 25px 40px;
+    background: white;
+    border: 4px dashed var(--star-yellow);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: giftWiggle 2s ease infinite;
+    max-width: 400px;
+    margin: 0 auto;
+    display: inline-block;
+}
+
+.secret-message:hover {
+    background: var(--star-yellow);
+    transform: scale(1.05);
+}
+
+.secret-message p {
+    font-family: var(--font-cute);
+    font-size: 20px;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/* ========================================
+   漫画区域 - 可爱版
+   ======================================== */
+#comics {
+    padding: 100px 20px;
+    background: linear-gradient(180deg, var(--cream) 0%, var(--sky-light) 100%);
+}
+
+.comics-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.comic-card {
+    width: 280px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.comic-card:hover {
+    transform: translateY(-20px) rotate(3deg);
+}
+
+.comic-frame {
+    background: white;
+    border: 6px solid var(--sky-main);
+    border-radius: 25px;
+    padding: 12px;
+    box-shadow: 
+        0 10px 0 var(--sky-light),
+        0 20px 40px rgba(91, 181, 197, 0.2);
+    overflow: hidden;
+    position: relative;
+}
+
+.comic-frame::before {
+    content: '✨';
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+}
+
+.comic-frame img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.comic-card:hover .comic-frame img {
+    transform: scale(1.05);
+}
+
+.comic-caption {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.comic-caption p {
+    font-family: var(--font-cute);
+    font-size: 20px;
+    color: var(--pink-heart);
+}
+
+.comics-note {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--text-medium);
+    font-family: var(--font-cute);
+    font-size: 16px;
+    background: white;
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 20px;
+    border: 3px dashed var(--pink-main);
+}
+
+/* 秘密消息动画 */
+@keyframes giftWiggle {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+}
+
+/* ========================================
+   页脚 - 可爱版
+   ======================================== */
+footer {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--pink-light);
+    border-top: 5px solid white;
+}
+
+footer p {
+    font-family: var(--font-cute);
+    color: var(--text-dark);
+    font-size: 16px;
+}
+
+.footer-date {
+    margin-top: 8px;
+    color: var(--pink-heart);
+}
+
+/* ========================================
+   模态框 - 可爱版
+   ======================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(232, 244, 248, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.modal-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 25px;
+    border: 8px solid white;
+    box-shadow: 0 20px 60px rgba(255, 107, 138, 0.3);
+}
+
+.close-btn {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    font-size: 45px;
+    color: var(--pink-heart);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    background: var(--pink-heart);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.viewer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.nav-btn {
+    background: white;
+    border: 4px solid var(--pink-main);
+    color: var(--pink-heart);
+    padding: 12px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: var(--font-cute);
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 0 var(--pink-light);
+}
+
+.nav-btn:hover {
+    background: var(--pink-main);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* 秘密弹窗 - 可爱版 */
+.secret-content {
+    background: white;
+    border: 6px solid var(--star-yellow);
+    border-radius: 40px;
+    padding: 45px;
+    max-width: 480px;
+    text-align: center;
+    position: relative;
+    animation: popBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 15px 0 var(--moon-cream);
+}
+
+@keyframes popBounce {
+    from {
+        transform: scale(0.3) rotate(-10deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+.secret-inner h2 {
+    font-family: var(--font-cute);
+    font-size: 32px;
+    color: var(--pink-heart);
+    margin-bottom: 25px;
+}
+
+.fireworks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.secret-text {
+    font-family: var(--font-cute);
+    font-size: 22px;
+    color: var(--text-dark);
+    margin: 12px 0;
+    opacity: 0;
+    animation: popUp 0.6s ease forwards;
+}
+
+.secret-text:nth-child(2) { animation-delay: 0.2s; }
+.secret-text:nth-child(3) { animation-delay: 0.4s; }
+.secret-text:nth-child(4) { animation-delay: 0.6s; }
+.secret-text:nth-child(5) { animation-delay: 0.8s; }
+
+.secret-text.highlight {
+    font-size: 30px;
+    color: var(--pink-heart);
+    background: var(--pink-light);
+    padding: 8px 20px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+@keyframes popUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.love-meter {
+    margin: 25px 0;
+}
+
+.love-meter p {
+    color: var(--text-medium);
+    margin-bottom: 10px;
+    font-family: var(--font-cute);
+}
+
+.meter-bar {
+    width: 100%;
+    height: 25px;
+    background: var(--sky-light);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 3px solid var(--pink-main);
+}
+
+.meter-fill {
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink-light), var(--pink-heart), var(--star-yellow));
+    border-radius: 12px;
+    animation: fillUp 2s ease forwards 1s;
+}
+
+@keyframes fillUp {
+    to { width: 100%; }
+}
+
+.meter-text {
+    color: var(--pink-heart);
+    font-size: 22px;
+    margin-top: 10px;
+    font-family: var(--font-cute);
+}
+
+.close-secret-btn {
+    background: linear-gradient(135deg, var(--pink-main), var(--pink-heart));
+    border: none;
+    color: white;
+    padding: 18px 45px;
+    border-radius: 35px;
+    font-family: var(--font-cute);
+    font-size: 22px;
+    cursor: pointer;
+    margin-top: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 0 var(--pink-deep);
+}
+
+.close-secret-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(255, 107, 138, 0.4);
+}
+
+/* ========================================
+   响应式设计
+   ======================================== */
+@media (max-width: 900px) {
+    /* 幻灯片适配 */
+    .photo-frame img {
+        height: 400px;
+    }
+    
+    .slideshow-controls {
+        gap: 20px;
+    }
+    
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .milestone-quick-nav {
+        padding: 15px;
+    }
+    
+    .milestone-btn {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+    
+}
+
+@media (max-width: 768px) {
+    .envelope {
+        width: 260px;
+        height: 170px;
+        margin-top: 55vh;
+    }
+    
+    .letter {
+        width: 500px;
+        max-width: 90vw;
+    }
+    
+    .envelope.open .letter {
+        transform: translateX(-50%) translateY(-420px);
+    }
+    
+    .letter-content {
+        padding: 25px 25px;
+    }
+    
+    .letter-content h2 {
+        font-size: 28px;
+    }
+    
+    .letter-date {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .letter-text {
+        font-size: 17px;
+        line-height: 2;
+    }
+    
+    .letter-text .highlight {
+        font-size: 32px;
+    }
+    
+    .letter-text .love-declaration {
+        font-size: 15px;
+        padding: 8px 12px;
+    }
+    
+    .letter-text .signature {
+        font-size: 15px;
+    }
+    
+    .title-line {
+        font-size: 36px;
+    }
+    
+    .badge-text {
+        font-size: 38px;
+    }
+    
+    .countdown-numbers {
+        flex-wrap: wrap;
+    }
+    
+    .count-item {
+        min-width: 75px;
+        padding: 12px 15px;
+    }
+    
+    .count-item span:first-child {
+        font-size: 32px;
+    }
+    
+    .holiday-wishes {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* 幻灯片 - 手机适配 */
+    .photo-frame img {
+        height: 300px;
+    }
+    
+    .photo-decoration {
+        font-size: 22px;
+    }
+    
+    .day-badge {
+        font-size: 18px;
+        padding: 8px 20px;
+    }
+    
+    #photo-message {
+        font-size: 16px;
+    }
+    
+    .thumbnail {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .floating-photo {
+        width: 60px;
+        height: 60px;
+        display: none; /* 手机上隐藏浮动照片 */
+    }
+    
+    #navbar {
+        padding: 10px 15px;
+    }
+    
+    #navbar ul {
+        gap: 8px;
+    }
+    
+    #navbar .nav-link {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    
+    .music-btn {
+        right: 10px;
+        padding: 5px 10px;
+        font-size: 16px;
+    }
+    
+    .cute-dog {
+        font-size: 35px;
+    }
+    
+    .cute-dog.dog-1 {
+        bottom: 10px;
+        left: 10px;
+    }
+    
+    .cute-dog.dog-2 {
+        bottom: 10px;
+        right: 10px;
+    }
+}
+
+@media (max-width: 550px) {
+    .envelope {
+        width: 220px;
+        height: 150px;
+        margin-top: 55vh;
+    }
+    
+    .letter {
+        width: 400px;
+        max-width: 92vw;
+    }
+    
+    .envelope.open .letter {
+        transform: translateX(-50%) translateY(-380px);
+    }
+    
+    .letter-content {
+        padding: 20px 18px;
+    }
+    
+    .letter-content h2 {
+        font-size: 24px;
+    }
+    
+    .letter-date {
+        font-size: 14px;
+    }
+    
+    .letter-text {
+        font-size: 15px;
+        line-height: 1.9;
+    }
+    
+    .letter-text .highlight {
+        font-size: 28px;
+    }
+    
+    .letter-text .love-declaration {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title-line {
+        font-size: 28px;
+        letter-spacing: 3px;
+    }
+    
+    .date-display {
+        font-size: 22px;
+        padding: 8px 20px;
+    }
+    
+    .section-title {
+        font-size: 28px;
+    }
+    
+    .comic-card {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    /* 幻灯片 - 小手机适配 */
+    .slideshow-controls {
+        gap: 15px;
+    }
+    
+    .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    #photo-counter {
+        font-size: 16px;
+    }
+    
+    .autoplay-btn {
+        font-size: 12px;
+        padding: 6px 15px;
+    }
+    
+    .photo-frame {
+        border-width: 5px;
+        border-radius: 20px;
+    }
+    
+    .photo-frame img {
+        height: 250px;
+    }
+    
+    .photo-decoration {
+        font-size: 18px;
+    }
+    
+    .milestone-quick-nav {
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .nav-label {
+        display: none;
+    }
+    
+    .milestone-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+    
+    .thumbnail-strip {
+        margin-top: 25px;
+    }
+    
+    .thumbnail {
+        width: 60px;
+        height: 60px;
+        border-width: 3px;
+    }
+    
+    .secret-content {
+        padding: 25px 15px;
+        margin: 0 10px;
+    }
+}

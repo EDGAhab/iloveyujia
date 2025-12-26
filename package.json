@@ -1,0 +1,13 @@
+{
+  "name": "iloveyujia",
+  "version": "1.0.0",
+  "description": "800天浪漫纪念网站 - 献给我最爱的你",
+  "scripts": {
+    "start": "npx serve",
+    "dev": "npx serve -p 3000"
+  },
+  "keywords": ["love", "romantic", "anniversary", "800days"],
+  "author": "Your Name",
+  "license": "MIT"
+}
+

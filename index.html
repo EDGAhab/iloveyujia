@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>致我最爱的你 - 800天纪念</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop>
+        <source src="music/romantic-music.mp3" type="audio/mpeg">
+        <!-- 请将浪漫音乐文件放入 music 文件夹 -->
+    </audio>
+
+    <!-- 飘落效果容器 -->
+    <div id="particles-container"></div>
+    <div id="hearts-container"></div>
+    
+    <!-- 可爱小狗装饰 -->
+    <div class="cute-dog dog-1">🐕</div>
+    <div class="cute-dog dog-2">🐶</div>
+
+    <!-- 开场信封动画 -->
+    <div id="opening-overlay">
+        <div class="envelope-container">
+            <div class="envelope">
+                <div class="envelope-flap"></div>
+                <div class="envelope-body">
+                    <div class="letter">
+                        <div class="letter-content">
+                            <h2>致我最爱的你</h2>
+                            <p class="letter-date">2025年12月27日</p>
+                            <div class="letter-text">
+                                <p>亲爱的老婆：</p>
+                                <p>时光荏苒，转眼间我们已经相爱<span class="highlight">800</span>天了。</p>
+                                <p>这800个日夜，因为有你，每一天都充满了温暖与幸福。</p>
+                                <p>在这个特别的日子里，我想对你说：</p>
+                                <p class="love-declaration">谢谢你出现在我的生命里，让我知道什么是真正的爱情。</p>
+                                <p>圣诞快乐，新年快乐！</p>
+                                <p>愿与你携手，走过更多的800天。</p>
+                                <p class="signature">永远爱你的人</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="click-hint">点击信封打开我的心意 💌</p>
+        </div>
+    </div>
+
+    <!-- 主页面内容 -->
+    <main id="main-content" class="hidden">
+        <!-- 导航 -->
+        <nav id="navbar">
+            <ul>
+                <li><a href="#hero" class="nav-link active">首页</a></li>
+                <li><a href="#memories" class="nav-link">回忆相册</a></li>
+                <li><a href="#comics" class="nav-link">漫画集</a></li>
+            </ul>
+            <button id="music-toggle" class="music-btn">🎵</button>
+        </nav>
+
+        <!-- 首页区域 -->
+        <section id="hero">
+            <div class="hero-content">
+                <div class="anniversary-badge">
+                    <span class="badge-text">800天</span>
+                    <span class="badge-subtitle">我们在一起</span>
+                </div>
+                <h1 class="main-title">
+                    <span class="title-line">致我最爱的你</span>
+                </h1>
+                <div class="date-display">
+                    <span class="year">2025</span>
+                    <span class="separator">.</span>
+                    <span class="month">12</span>
+                    <span class="separator">.</span>
+                    <span class="day">27</span>
+                </div>
+                <div class="countdown-section">
+                    <p class="countdown-label">我们相爱了</p>
+                    <div class="countdown-numbers">
+                        <div class="count-item">
+                            <span id="days-count">800</span>
+                            <span class="count-label">天</span>
+                        </div>
+                        <div class="count-item">
+                            <span id="hours-count">00</span>
+                            <span class="count-label">时</span>
+                        </div>
+                        <div class="count-item">
+                            <span id="minutes-count">00</span>
+                            <span class="count-label">分</span>
+                        </div>
+                        <div class="count-item">
+                            <span id="seconds-count">00</span>
+                            <span class="count-label">秒</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="holiday-wishes">
+                    <div class="wish-card christmas">
+                        <span class="wish-icon">🎄</span>
+                        <span class="wish-text">2025 圣诞快乐</span>
+                    </div>
+                    <div class="wish-card newyear">
+                        <span class="wish-icon">🎆</span>
+                        <span class="wish-text">2026 新年快乐</span>
+                    </div>
+                </div>
+                <a href="#memories" class="scroll-hint">
+                    <span>向下滑动探索我们的回忆</span>
+                    <div class="scroll-arrow"></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 回忆相册区域 -->
+        <section id="memories">
+            <div class="section-header">
+                <h2 class="section-title">我们的回忆</h2>
+                <p class="section-subtitle">800天 · 200+张照片 · 满满的爱 📸</p>
+            </div>
+
+            <!-- 照片轮播控制 -->
+            <div class="slideshow-controls">
+                <button id="prev-photo" class="control-btn">❮</button>
+                <div class="slideshow-info">
+                    <span id="photo-counter">1 / 200+</span>
+                    <button id="toggle-autoplay" class="autoplay-btn playing">⏸️ 自动播放中</button>
+                </div>
+                <button id="next-photo" class="control-btn">❯</button>
+            </div>
+
+            <!-- 主照片展示区 -->
+            <div class="main-slideshow">
+                <div class="slideshow-container">
+                    <div class="photo-frame">
+                        <img id="main-photo" src="photos/1.jpg" alt="我们的照片" onerror="this.src='https://via.placeholder.com/800x600/FFB6C1/FFF?text=我们的回忆'">
+                        <div class="photo-decoration top-left">✨</div>
+                        <div class="photo-decoration top-right">💕</div>
+                        <div class="photo-decoration bottom-left">🐕</div>
+                        <div class="photo-decoration bottom-right">⭐</div>
+                    </div>
+                    <div class="photo-caption-display">
+                        <span class="day-badge" id="current-day">第 1 天</span>
+                        <p id="photo-message">每一张照片都是我们的珍贵回忆 💕</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 照片缩略图滚动条 -->
+            <div class="thumbnail-strip">
+                <div class="thumbnail-container" id="thumbnails">
+                    <!-- 缩略图由JS动态生成 -->
+                </div>
+            </div>
+
+            <!-- 快速跳转里程碑 -->
+            <div class="milestone-quick-nav">
+                <span class="nav-label">快速跳转：</span>
+                <button class="milestone-btn" data-day="1">🌸 第1天</button>
+                <button class="milestone-btn" data-day="100">💗 第100天</button>
+                <button class="milestone-btn" data-day="365">🎂 一周年</button>
+                <button class="milestone-btn" data-day="500">🌟 第500天</button>
+                <button class="milestone-btn" data-day="800">💖 第800天</button>
+            </div>
+
+            <!-- 浮动照片墙效果 -->
+            <div class="floating-photos-container" id="floating-photos">
+                <!-- 浮动照片由JS动态生成 -->
+            </div>
+        </section>
+
+        <!-- 秘密惊喜入口 (移到相册下方) -->
+        <div class="secret-section">
+            <div class="secret-message" id="secret">
+                <p>🎁 送你一个小秘密：点击这里 🎁</p>
+            </div>
+        </div>
+
+        <!-- 漫画区域 -->
+        <section id="comics">
+            <div class="section-header">
+                <h2 class="section-title">我画给你的漫画</h2>
+                <p class="section-subtitle">每一笔都是我的爱</p>
+            </div>
+            <div class="comics-gallery">
+                <div class="comic-card" data-index="0">
+                    <div class="comic-frame">
+                        <img src="comics/comic-1.jpg" alt="漫画1" onerror="this.src='https://via.placeholder.com/400x500/FFE4E1/FF69B4?text=漫画1'">
+                    </div>
+                    <div class="comic-caption">
+                        <p>漫画标题 1</p>
+                    </div>
+                </div>
+                <div class="comic-card" data-index="1">
+                    <div class="comic-frame">
+                        <img src="comics/comic-2.jpg" alt="漫画2" onerror="this.src='https://via.placeholder.com/400x500/E6E6FA/9370DB?text=漫画2'">
+                    </div>
+                    <div class="comic-caption">
+                        <p>漫画标题 2</p>
+                    </div>
+                </div>
+                <div class="comic-card" data-index="2">
+                    <div class="comic-frame">
+                        <img src="comics/comic-3.jpg" alt="漫画3" onerror="this.src='https://via.placeholder.com/400x500/FFEFD5/FF8C00?text=漫画3'">
+                    </div>
+                    <div class="comic-caption">
+                        <p>漫画标题 3</p>
+                    </div>
+                </div>
+                <div class="comic-card" data-index="3">
+                    <div class="comic-frame">
+                        <img src="comics/comic-4.jpg" alt="漫画4" onerror="this.src='https://via.placeholder.com/400x500/E0FFFF/20B2AA?text=漫画4'">
+                    </div>
+                    <div class="comic-caption">
+                        <p>漫画标题 4</p>
+                    </div>
+                </div>
+            </div>
+            <p class="comics-note">💡 点击漫画可以放大查看哦~</p>
+        </section>
+
+        <!-- 页脚 -->
+        <footer>
+            <p>用爱制作 💕 献给我最爱的你</p>
+            <p class="footer-date">2025.12.27 - 相爱800天纪念</p>
+        </footer>
+    </main>
+
+    <!-- 漫画查看器 -->
+    <div id="comic-viewer" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <img id="viewer-image" src="" alt="漫画大图">
+            <div class="viewer-nav">
+                <button id="prev-comic" class="nav-btn">❮ 上一张</button>
+                <button id="next-comic" class="nav-btn">下一张 ❯</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 照片查看器 -->
+    <div id="photo-viewer" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <img id="photo-viewer-image" src="" alt="照片大图">
+        </div>
+    </div>
+
+    <!-- 秘密惊喜弹窗 -->
+    <div id="secret-popup" class="modal">
+        <div class="secret-content">
+            <span class="close-btn">&times;</span>
+            <div class="secret-inner">
+                <h2>🎊 惊喜来啦 🎊</h2>
+                <div class="fireworks"></div>
+                <p class="secret-text">你是我生命中最美的意外</p>
+                <p class="secret-text">遇见你是我最大的幸运</p>
+                <p class="secret-text">爱你不只这800天</p>
+                <p class="secret-text highlight">而是一辈子！</p>
+                <div class="love-meter">
+                    <p>对你的爱</p>
+                    <div class="meter-bar">
+                        <div class="meter-fill"></div>
+                    </div>
+                    <p class="meter-text">∞ 无限大</p>
+                </div>
+                <button class="close-secret-btn">我也爱你 💕</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
