@@ -761,6 +761,25 @@ const photoDateCache = {};
 const imagePreloadCache = new Map();
 
 /**
+ * 获取图片路径（优先 JPG，回退到 PNG）
+ */
+function getPhotoPath(filename) {
+    const baseName = filename.replace(/\.(png|jpg|jpeg)$/i, '');
+    return `photos/${baseName}.jpg`; // 优化后的格式是 JPG
+}
+
+/**
+ * 获取图片路径（带回退）
+ */
+function getPhotoPathWithFallback(filename) {
+    const baseName = filename.replace(/\.(png|jpg|jpeg)$/i, '');
+    return {
+        jpg: `photos/${baseName}.jpg`,
+        png: `photos/${baseName}.png`
+    };
+}
+
+/**
  * 预加载图片
  */
 function preloadImage(src) {
@@ -791,7 +810,7 @@ function preloadAdjacentPhotos(currentIndex) {
     preloadIndices.forEach(index => {
         const photoFilename = PHOTO_FILES[index];
         if (photoFilename) {
-            const photoPath = `photos/${photoFilename}`;
+            const photoPath = getPhotoPath(photoFilename);
             preloadImage(photoPath).catch(() => {
                 // 预加载失败不影响主流程
             });
@@ -869,7 +888,8 @@ function initPhotoSlideshow() {
     // 预加载第一张照片和相邻照片
     const firstPhotoFilename = PHOTO_FILES[0];
     if (firstPhotoFilename) {
-        preloadImage(`photos/${firstPhotoFilename}`).then(() => {
+        const firstPhotoPath = getPhotoPath(firstPhotoFilename);
+        preloadImage(firstPhotoPath).then(() => {
             // 第一张照片加载完成后显示
             updatePhoto(0);
         }).catch(() => {
@@ -980,21 +1000,28 @@ function updatePhoto(index) {
     setTimeout(() => {
         // 更新照片源
         const photoFilename = PHOTO_FILES[index] || PHOTO_FILES[0];
-        const photoPath = `photos/${photoFilename}`;
+        const photoPaths = getPhotoPathWithFallback(photoFilename);
         
         // 使用预加载的图片（如果已加载）
+        const photoPath = photoPaths.jpg;
         if (imagePreloadCache.has(photoPath)) {
             imagePreloadCache.get(photoPath).then(img => {
                 mainPhoto.src = img.src;
             }).catch(() => {
-                mainPhoto.src = photoPath;
+                // 尝试 PNG 作为回退
+                mainPhoto.src = photoPaths.png;
             });
         } else {
             mainPhoto.src = photoPath;
         }
         
         mainPhoto.onerror = function() {
-            this.src = `https://via.placeholder.com/800x600/FFB6C1/FFF?text=照片${photoNum}`;
+            // 如果 JPG 加载失败，尝试 PNG
+            if (this.src.includes('.jpg')) {
+                this.src = photoPaths.png;
+            } else {
+                this.src = `https://via.placeholder.com/800x600/FFB6C1/FFF?text=照片${photoNum}`;
+            }
         };
         
         // 预加载相邻图片
@@ -1089,7 +1116,8 @@ function generateThumbnails(container) {
             thumb.dataset.index = photoIndex;
             
             const thumbFilename = PHOTO_FILES[photoIndex] || PHOTO_FILES[0];
-            thumb.innerHTML = `<img src="photos/${thumbFilename}" alt="照片${photoIndex + 1}" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/100x100/FFB6C1/FFF?text=${photoIndex + 1}'">`;
+            const thumbPath = getPhotoPath(thumbFilename);
+            thumb.innerHTML = `<img src="${thumbPath}" alt="照片${photoIndex + 1}" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/100x100/FFB6C1/FFF?text=${photoIndex + 1}'">`;
             
             thumb.addEventListener('click', () => {
                 currentPhotoIndex = photoIndex;
@@ -1144,9 +1172,15 @@ function openPhotoViewer(index) {
     const closeBtn = viewer.querySelector('.close-btn');
     
     const photoFilename = PHOTO_FILES[index] || PHOTO_FILES[0];
-    viewerImage.src = `photos/${photoFilename}`;
+    const photoPaths = getPhotoPathWithFallback(photoFilename);
+    viewerImage.src = photoPaths.jpg;
     viewerImage.onerror = function() {
-        this.src = `https://via.placeholder.com/1200x800/FFB6C1/FFF?text=照片${index + 1}`;
+        // 如果 JPG 加载失败，尝试 PNG
+        if (this.src.includes('.jpg')) {
+            this.src = photoPaths.png;
+        } else {
+            this.src = `https://via.placeholder.com/1200x800/FFB6C1/FFF?text=照片${index + 1}`;
+        }
     };
     viewer.classList.add('active');
     
@@ -1193,8 +1227,9 @@ function createFloatingPhoto(container, index) {
     
     const randomPhotoIndex = Math.floor(Math.random() * TOTAL_PHOTOS);
     const randomPhotoFilename = PHOTO_FILES[randomPhotoIndex] || PHOTO_FILES[0];
+    const randomPhotoPath = getPhotoPath(randomPhotoFilename);
     
-    photo.innerHTML = `<img src="photos/${randomPhotoFilename}" alt="" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none'">`;
+    photo.innerHTML = `<img src="${randomPhotoPath}" alt="" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none'">`;
     
     // 随机位置
     const positions = [
@@ -1216,8 +1251,9 @@ function createFloatingPhoto(container, index) {
     setInterval(() => {
         const newPhotoIndex = Math.floor(Math.random() * TOTAL_PHOTOS);
         const newPhotoFilename = PHOTO_FILES[newPhotoIndex] || PHOTO_FILES[0];
+        const newPhotoPath = getPhotoPath(newPhotoFilename);
         
-        photo.querySelector('img').src = `photos/${newPhotoFilename}`;
+        photo.querySelector('img').src = newPhotoPath;
     }, 10000 + index * 2000);
 }
 
