@@ -26,43 +26,35 @@
 
     <!-- 开场信封动画 -->
     <div id="opening-overlay">
+        <!-- 信件 - 独立居中显示 -->
+        <div class="letter">
+            <div class="letter-content">
+                <h2>我的亲亲老婆--刘语佳！</h2>
+                <div class="letter-text">
+                    <p>亲爱滴亲亲老婆：</p>
+                    <p>我们已经在一起<span class="highlight">800</span>天啦。</p>
+                    <p>这800个日夜，因为有你在，我的每一天都变得特别温暖、特别幸福。你走了以后我真的超想你，每天都在想要是你在我旁边就好了</p>
+                    <p>一想到你我就会开心，我真的好幸福好幸福有你。</p>
+                    <p class="love-declaration">谢谢你来到我的生命里，让我可以这么认真、这么用力地去爱一个人嘿嘿。</p>
+                    <p>圣诞快乐！新年快乐！</p>
+                    <p>我们在2026要继续幸福的走下去，没有什么能够阻挡我们！</p>
+                    <p class="signature">你的亲亲老公--黄飞廉！</p>
+                </div>
+            </div>
+        </div>
+        <!-- 信封容器 - 保持在底部 -->
         <div class="envelope-container">
             <div class="envelope">
                 <div class="envelope-flap"></div>
                 <div class="envelope-body">
-                    <div class="letter">
-                        <div class="letter-content">
-                            <h2>我的亲亲老婆--刘语佳！</h2>
-                            <div class="letter-text">
-                                <p>亲爱滴亲亲老婆：</p>
-                                <p>我们已经在一起<span class="highlight">800</span>天啦。</p>
-                                <p>这800个日夜，因为有你在，我的每一天都变得特别温暖、特别幸福。你走了以后我真的超想你，每天都在想要是你在我旁边就好了</p>
-                                <p>一想到你我就会开心，我真的好幸福好幸福有你。</p>
-                                <p class="love-declaration">谢谢你来到我的生命里，让我可以这么认真、这么用力地去爱一个人嘿嘿。</p>
-                                <p>圣诞快乐！新年快乐！</p>
-                                <p>我们在2026要继续幸福的走下去，没有什么能够阻挡我们！</p>
-                                <p class="signature">你的亲亲老公--黄飞廉！</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-            <p class="click-hint">点击上面的信封打开 💌</p>
+            <p class="click-hint">点击上面的小鸡毛打开信封 💌</p>
         </div>
     </div>
 
     <!-- 主页面内容 -->
     <main id="main-content" class="hidden">
-        <!-- 导航 -->
-        <nav id="navbar">
-            <ul>
-                <li><a href="#hero" class="nav-link active">首页</a></li>
-                <li><a href="#memories" class="nav-link">回忆相册</a></li>
-                <li><a href="#comics" class="nav-link">漫画集</a></li>
-            </ul>
-            <button id="music-toggle" class="music-btn">🎵</button>
-        </nav>
-
         <!-- 首页区域 -->
         <section id="hero">
             <div class="hero-content">
@@ -125,7 +117,8 @@
             <div class="main-slideshow">
                 <div class="slideshow-container">
                     <div class="photo-frame">
-                        <img id="main-photo" src="photos/1.jpg" alt="我们的照片" onerror="this.src='https://via.placeholder.com/800x600/FFB6C1/FFF?text=我们的回忆'">
+                        <img id="main-photo" src="photos/0108_1.png" alt="我们的照片" onerror="this.src='https://via.placeholder.com/800x600/FFB6C1/FFF?text=我们的回忆'">
+                        <div class="photo-caption-overlay" id="photo-caption-overlay">[字幕] 待填写照片字幕... 💕</div>
                         <div class="photo-decoration top-left">✨</div>
                         <div class="photo-decoration top-right">💕</div>
                         <div class="photo-decoration bottom-left">🐕</div>
@@ -145,14 +138,12 @@
                 </div>
             </div>
 
-            <!-- 快速跳转里程碑 -->
-            <div class="milestone-quick-nav">
-                <span class="nav-label">快速跳转：</span>
-                <button class="milestone-btn" data-day="1">🌸 第1天</button>
-                <button class="milestone-btn" data-day="100">💗 第100天</button>
-                <button class="milestone-btn" data-day="365">🎂 一周年</button>
-                <button class="milestone-btn" data-day="500">🌟 第500天</button>
-                <button class="milestone-btn" data-day="800">💖 第800天</button>
+            <!-- 滚动提示 -->
+            <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+                <a href="#comics" class="scroll-hint">
+                    <span>向下滑动看看我们的漫画吧！</span>
+                    <div class="scroll-arrow"></div>
+                </a>
             </div>
 
             <!-- 浮动照片墙效果 -->
@@ -170,7 +161,6 @@
             <div class="comics-gallery" id="comics-gallery">
                 <!-- 漫画卡片将由JavaScript动态生成 -->
             </div>
-            <p class="comics-note">💡 点击漫画有惊喜！</p>
         </section>
 
         <!-- 页脚 -->
@@ -188,18 +178,19 @@
                 <!-- 左侧：漫画大图 -->
                 <div class="comic-viewer-left">
                     <img id="viewer-image" src="" alt="漫画大图">
-                    <div class="viewer-nav">
-                        <button id="prev-comic" class="nav-btn">❮ 上一张</button>
-                        <button id="next-comic" class="nav-btn">下一张 ❯</button>
-                    </div>
                 </div>
                 <!-- 右侧：对应的四张照片 -->
                 <div class="comic-viewer-right">
-                    <h3 class="comic-photos-title">相关照片 💕</h3>
+                    <h3 class="comic-photos-title">现实中的我们 💕</h3>
                     <div class="comic-photos-grid" id="comic-photos-grid">
                         <!-- 照片将由JavaScript动态生成 -->
                     </div>
                 </div>
+            </div>
+            <!-- 导航按钮移到最下面 -->
+            <div class="viewer-nav">
+                <button id="prev-comic" class="nav-btn">❮ 上一张</button>
+                <button id="next-comic" class="nav-btn">下一张 ❯</button>
             </div>
         </div>
     </div>

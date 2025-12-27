@@ -8,13 +8,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initEnvelopeAnimation();
     initParticles();
     initHearts();
-    initNavigation();
+    // initNavigation(); // 导航栏已删除
     initCountdown();
     initComics();  // 动态加载漫画
     initComicViewer();
     initPhotoSlideshow();  // 新的动态相册
     initSecretMessage();
-    initMusicPlayer();
+    // initMusicPlayer(); // 音乐按钮已随导航栏删除
     initScrollAnimations();
     initFloatingPhotos();  // 浮动照片效果
 });
@@ -30,11 +30,50 @@ function initEnvelopeAnimation() {
     
     let isOpen = false;
     
+    const letter = document.querySelector('.letter');
+    
+    // 确保信件不覆盖信封：动态调整信件位置
+    function adjustLetterPosition() {
+        if (letter && letter.classList.contains('show')) {
+            const envelopeRect = envelopeContainer.getBoundingClientRect();
+            const envelopeTop = envelopeRect.top;
+            const viewportHeight = window.innerHeight;
+            
+            // 计算信件实际高度
+            const letterRect = letter.getBoundingClientRect();
+            const letterHeight = letterRect.height;
+            
+            // 计算信件中心到信封顶部的距离（留出30px边距）
+            const availableSpace = envelopeTop - 30;
+            
+            // 如果信件高度超过可用空间，向上调整位置
+            if (letterHeight > availableSpace && availableSpace > 0) {
+                // 计算需要向上偏移的距离
+                const offset = (letterHeight - availableSpace) / 2;
+                // 调整top位置，使信件向上移动
+                letter.style.top = `calc(50% - ${offset}px)`;
+            } else {
+                // 如果空间足够，保持居中
+                letter.style.top = '50%';
+            }
+        }
+    }
+    
+    // 窗口大小改变时重新调整
+    window.addEventListener('resize', adjustLetterPosition);
+    
     envelopeContainer.addEventListener('click', function() {
         if (!isOpen) {
             // 第一次点击：打开信封
             envelope.classList.add('open');
             isOpen = true;
+            
+            // 显示信件（居中显示）
+            if (letter) {
+                letter.classList.add('show');
+                // 延迟调整位置，等待信件内容加载
+                setTimeout(adjustLetterPosition, 100);
+            }
             
             // 更新提示文字
             document.querySelector('.click-hint').textContent = '再次点击进入网站！ 💕';
@@ -150,6 +189,32 @@ function createHeartAtPosition(x, y) {
 function initNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('section');
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    
+    // 移动端菜单切换
+    if (mobileMenuToggle && navMenu) {
+        mobileMenuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+        });
+        
+        // 点击导航链接后关闭移动菜单
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            });
+        });
+        
+        // 点击外部关闭菜单
+        document.addEventListener('click', function(e) {
+            if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            }
+        });
+    }
     
     // 平滑滚动
     navLinks.forEach(link => {
@@ -159,7 +224,11 @@ function initNavigation() {
             const targetSection = document.querySelector(targetId);
             
             if (targetSection) {
-                targetSection.scrollIntoView({ behavior: 'smooth' });
+                const offsetTop = targetSection.offsetTop - 80; // 考虑导航栏高度
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
             }
         });
     });
@@ -229,7 +298,18 @@ const COMIC_FILES = [
 
 // 每个漫画对应的照片文件夹
 // 照片会自动从 comics/comic-X-photos/ 文件夹中加载
-// 请将照片命名为：1.jpg, 2.jpg, 3.jpg, 4.jpg 放在对应的文件夹中
+// 配置每个comic文件夹中的实际照片文件名
+const COMIC_PHOTOS = {
+    1: ['0108_4.png', '0116.png', '0118_2.png', '0131_3.png'], // comic-1-photos 文件夹中的照片
+    2: ['0202_2.png', '1226_15.png'], // comic-2-photos 文件夹中的照片
+    3: ['0113.png', '0114.png', '0127.png', '0129_1.png'], // comic-3-photos 文件夹中的照片
+    4: ['0519_1.png', '1226_35.png', '1226_49.png', 'IMG_2358_1.png'], // comic-4-photos 文件夹中的照片
+    5: ['0331_2.png', '0401_2.png', '0401_4.png', '1226_4.png'], // comic-5-photos 文件夹中的照片
+    6: ['0405_4.png', '0405_5.png', 'IMG_1629.png', 'originalImage_1918065264_livephoto.png'], // comic-6-photos 文件夹中的照片
+    7: ['0704_3.png', '0704_5.png', '0704_7.png', '0704_8.png'], // comic-7-photos 文件夹中的照片
+    8: ['1108_4.png', '1108_7.png', '1108_8.png', 'IMG_5470.png'], // comic-8-photos 文件夹中的照片
+    9: ['1213.png', '1214_1.png', '1214_2.png', '1214_3.png']  // comic-9-photos 文件夹中的照片
+};
 
 function initComics() {
     const gallery = document.getElementById('comics-gallery');
@@ -305,24 +385,39 @@ function initComicViewer() {
             const comicNumber = comicIndex + 1;
             const photoFolder = `comics/comic-${comicNumber}-photos/`;
             
-            // 自动加载四张照片：1.jpg, 2.jpg, 3.jpg, 4.jpg
+            // 获取该comic文件夹中配置的照片列表
+            const photoFiles = COMIC_PHOTOS[comicNumber] || [];
+            
+            // 如果没有配置，尝试加载默认的 1.jpg, 2.jpg, 3.jpg, 4.jpg
+            let filesToLoad = [];
+            if (photoFiles.length > 0) {
+                filesToLoad = photoFiles;
+            } else {
+                // 尝试默认文件名
+                for (let i = 1; i <= 4; i++) {
+                    filesToLoad.push(`${i}.jpg`);
+                }
+            }
+            
             let loadedCount = 0;
             let hasPhotos = false;
             
-            for (let i = 1; i <= 4; i++) {
-                const photoPath = `${photoFolder}${i}.jpg`;
+            // 加载所有配置的照片
+            filesToLoad.forEach((filename, index) => {
+                const photoPath = `${photoFolder}${filename}`;
                 const photoItem = document.createElement('div');
                 photoItem.className = 'comic-photo-item';
                 
                 const img = document.createElement('img');
                 img.src = photoPath;
-                img.alt = `照片 ${i}`;
+                img.alt = `照片 ${index + 1}`;
                 img.onclick = () => openPhotoInViewer(photoPath);
                 
                 // 检测图片是否加载成功
                 img.onload = function() {
                     hasPhotos = true;
                     loadedCount++;
+                    photoItem.style.display = ''; // 确保显示
                 };
                 
                 img.onerror = function() {
@@ -332,14 +427,14 @@ function initComicViewer() {
                 
                 photoItem.appendChild(img);
                 photosGrid.appendChild(photoItem);
-            }
+            });
             
             // 如果所有照片都加载失败，显示提示
             setTimeout(() => {
                 if (!hasPhotos) {
                     photosGrid.innerHTML = '<p class="no-photos-hint">照片待添加 💕<br>请将照片放在 ' + photoFolder + ' 文件夹中</p>';
                 }
-            }, 500);
+            }, 1000);
         }
         
         // 在照片查看器中打开照片
@@ -394,6 +489,34 @@ function initComicViewer() {
             });
         }
         
+        // 触摸滑动支持（移动端漫画查看器）
+        let comicTouchStartX = 0;
+        let comicTouchEndX = 0;
+        
+        if (viewerImage) {
+            viewerImage.addEventListener('touchstart', (e) => {
+                comicTouchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            
+            viewerImage.addEventListener('touchend', (e) => {
+                comicTouchEndX = e.changedTouches[0].screenX;
+                const swipeDiff = comicTouchStartX - comicTouchEndX;
+                const swipeThreshold = 50;
+                
+                if (Math.abs(swipeDiff) > swipeThreshold) {
+                    if (swipeDiff > 0) {
+                        // 向左滑动，下一张
+                        currentIndex = (currentIndex + 1) % comicImages.length;
+                        showComic(currentIndex);
+                    } else {
+                        // 向右滑动，上一张
+                        currentIndex = (currentIndex - 1 + comicImages.length) % comicImages.length;
+                        showComic(currentIndex);
+                    }
+                }
+            }, { passive: true });
+        }
+        
         // 关闭按钮
         if (closeBtn) {
             closeBtn.addEventListener('click', function() {
@@ -428,31 +551,264 @@ function initComicViewer() {
 /* ========================================
    动态照片幻灯片 (支持200+照片)
    ======================================== */
-// 配置：设置你的照片数量
-const TOTAL_PHOTOS = 200; // 修改这个数字为你实际的照片数量
+// 照片文件列表 - 按文件名排序（从实际文件夹中获取的所有照片）
+const PHOTO_FILES = [
+    '0108_2.png', '0108_4.png', '0110_2.png', '0113.png', '0114.png', '0116.png', '0118_2.png', '0118_3.png',
+    '0120.png', '0121.png', '0122_4.png', '0123.png', '0124.png', '0125_1.png', '0125_2.png', '0127.png', '0129_1.png',
+    '0129_4.png', '0129_6.png', '0129_7.png', '0129_9.png', '0131_3.png', '0201.png', '0202_2.png', '0205_1.png',
+    '0208_2.png', '0211_1.png', '0212_3.png', '0212_4.png', '0212_6.png', '0214.png', '0215_2.png', '0222_1.png',
+    '0222_2.png', '0228.png', '0302.png', '0309_1.png', '0309_2.png', '0309_3.png', '0309_4.png', '0309_5.png',
+    '0309_51.png', '0309_6.png', '0309_7.png', '0309_71.png', '0309_8.png', '0309_9.png', '0311_2.png', '0314_3.png',
+    '0318_1.png', '0319.png', '0320_4.png', '0321.png', '0324_1.png', '0325.png', '0328_11.png', '0328_2.png',
+    '0328_9.png', '0329_2.png', '0331_1743471649.png', '0405_1.png', '0405_4.png', '0405_5.png', '0405_7.png',
+    '0405_8.png', '0405_9.png', '0406.png', '0407_1.png', '0407_2.png', '0412.png', '0414_1.png', '0426_1.png',
+    '0426_4.png', '0512.png', '0516_2.png', '0517_4.png', '0519_1.png', '0519_2.png', '0519_4.png', '0519_5.png',
+    '0519_6.png', '0521.png', '0602_1.png', '0603_1.png', '0607.png', '0608_6.png', '0614_1.png', '0615_2.png',
+    '0616.png', '0620.png', '0621_1.png', '0621_2.png', '0629.png', '0629_05.png', '0629_10.png',
+    '0629_2.png', '0629_3.png', '0629_7.png', '0704_3.png', '0704_5.png', '0704_8 (2).png',
+    '0706_1.png', '0708.png', '0714_1.png', '0725_2.png', '0727_2.png', '0802_1.png', '0807.png', '0808.png',
+    '0810_1.png', '0810_2.png', '0814_2.png', '0816.png', '0817_1.png', '0817_3.png', '0820.png', '0825_2.png', '0827_1.png',
+    '0831_4.png', '0904.png', '0907_3.png', '0907_4.png', '0908_3.png', '0915_2.png', '0918_1.png', '0919.png',
+    '0921_2.png', '0922_1.png', '0929_2.png', '1003_2.png', '1019_5.png', '1019_7.png', '1019_8.png', '1019_9.png', '1031_1.png',
+    '1107.png', '1108_2.png', '1108_3.png', '1108_4.png', '1108_7.png', '1108_8.png', '1108_9.png', '1110.png',
+    '1126_1.png', '1128_1.png', '1202_2.png', '1202_3.png', '1213.png', '1214_1.png', '1214_2.png', '1214_3.png', '1222_2.png',
+    '1225_1.png'
+];
+
+// 配置：照片数量自动从文件列表获取
+const TOTAL_PHOTOS = PHOTO_FILES.length;
 const AUTOPLAY_INTERVAL = 3000; // 自动播放间隔（毫秒）
+
+// 开始日期：2023年10月19日
+const START_DATE = new Date('2023-10-19T00:00:00');
+
+// 照片字幕配置 - 为每张照片设置字幕（placeholder，待填写）
+const PHOTO_CAPTIONS = {
+    // 使用照片编号作为key，对应时间顺序的第几张照片
+    // 格式：数字: '字幕内容'
+    1: '到加州啦，大包小包的下飞机了',
+    2: '一切开始的地方',
+    3: '当时还是在睡气垫床呢',
+    4: '第一次逛旁边的Safeway',
+    5: '你教我学车，带我去各种地方',
+    6: '办了costco的卡！当时超级开心的！',
+    7: '看到了这个机器，然后我们就开始收集瓶子啦',
+    8: '陈佳阿姨家旁边的猫',
+    9: '你做的卤鸭脖超好吃！',
+    10: '当时心心念念的杨国福麻辣烫',
+    11: '大屏幕！！这张像小偷嘿嘿',
+    12: 'OvO',
+    13: 'Zzzzzz',
+    14: 'Costco逛逛逛！',
+    15: 'Mua！',
+    16: '第一次买costco食堂的东西，便宜又好吃',
+    17: '猜猜这时候我们开车去哪里',
+    18: 'In-N-Out！还有一个地方',
+    19: '多乐来啦！',
+    20: '一来就在车上尿了，狗多乐初见端倪',
+    21: '我俩和多乐的拍立得，当时超兴奋的',
+    22: '拉肚子的老刘家烧烤',
+    23: '你偷拍我',
+    24: '生日快乐！好美好美',
+    25: '潦草小狗',
+    26: '好惬意，有阳光有狗有我',
+    27: '这时候还是能在笼子里的',
+    28: '一起去看赵本山啦',
+    29: '现场超多东北老乡',
+    30: '大美女',
+    31: '全世界最好最好最好的老婆',
+    32: '气到模糊，忘了什么事情了，可爱捏',
+    33: '超好吃的广东早茶',
+    34: '在Costco试坐沙发',
+    35: '美女和柠檬树',
+    36: '打理好自己嘿嘿，准备拍婚纱照啦',
+    37: '太美了',
+    38: '天文台的你像个大明星',
+    39: '后面的那个人羡慕死了',
+    40: '人生照片',
+    41: '我们像是电影里的男女主角',
+    42: '最帅的夫妻',
+    43: '超喜欢你这套红色的',
+    44: '墨镜真酷',
+    45: '被冻得好惨，当时辛苦你啦',
+    46: '嘿嘿',
+    47: '太美了吧',
+    48: '最好的老婆送我的巨大螺狮粉！',
+    49: '可爱捏',
+    50: '噩梦来了，当时看到这么多家具都窒息了',
+    51: '选照片！还有海胆',
+    52: '多乐长大一点了',
+    53: '翻箱倒柜找你妈妈给我们寄的东西',
+    54: '可爱捏',
+    55: '背影可爱捏',
+    56: '越南城的夜市',
+    57: '可爱捏',
+    58: '多乐大战净净',
+    59: '多乐的小辫子',
+    60: '一起去petco',
+    61: '亚利桑那！',
+    62: '比心！',
+    63: '攻击波！',
+    64: '可爱捏，亚利桑那的和加州感觉是两个世界',
+    65: '牌子合照，可爱捏',
+    66: '我俩穿的衣服鲜明对比',
+    67: '阿甘正传的长公路',
+    68: '车上美美地睡着了',
+    69: 'delicate arch打卡',
+    70: '认真清点我们还有多少家具没安装',
+    71: '被多乐捆住了',
+    72: '当时去santa cruz一家卖水晶的店里',
+    73: '和多乐一起奔向海边',
+    74: '蒙娜丽莎和小狗',
+    75: '开心捏，和瀚文',
+    76: '僵尸姐姐',
+    77: '毕业啦毕业啦',
+    78: '开心合照',
+    79: '还有花花',
+    80: 'cheers！',
+    81: '这张好好看',
+    82: '回来啦，你俩排排睡',
+    83: '旧金山小狗',
+    84: '你妈妈买了大电视！',
+    85: '可爱捏',
+    86: '粉色的海',
+    87: '你妈妈要走啦，好舍不得',
+    88: '带你去吃cajun散散心',
+    89: 'cajun买太多了第二天回家继续吃',
+    90: '绝美侧颜，真的是大明星，随便拍都好看',
+    91: '弄了好多种子准备大干一场！',
+    92: '你做的超好吃的饮料',
+    93: 'rua！！！',
+    94: '懵懂小白狗',
+    95: '优胜美地！',
+    96: '多乐长大了这时候',
+    97: '一家三口合照！',
+    98: '可爱捏',
+    99: '这个地方照了好多好照片',
+    100: '独立日烟花！',
+    101: 'big sur！',
+    102: '在外面种菜，超开心的',
+    103: '车子被撞了。。。',
+    104: '嬛嬛',
+    105: '生日！',
+    106: '开心的多乐和认真的妈妈',
+    107: '卤味！',
+    108: '那天累倒了',
+    109: '送我上班，多乐的小头',
+    110: '被多乐缠住了',
+    111: '送我上班，你最好啦！',
+    112: '可爱多乐',
+    113: '可爱多乐和家里的皇帝',
+    114: '寿喜烧！你超级会做',
+    115: '嘿嘿',
+    116: '傻笑',
+    117: '多乐睡着了',
+    118: '看什么看！',
+    119: '九宫格漂亮饭',
+    120: '可爱捏',
+    121: '蹦床！',
+    122: '小狗都喜欢你',
+    123: '表情包素材+1',
+    124: '可爱捏',
+    125: '妈妈睡着了',
+    126: '傻笑*2',
+    127: '被小狗包围',
+    128: '那天去拿新电脑，直接进Audrey家里',
+    129: '修毛大师',
+    130: '这时候多乐已经很大了',
+    131: '两周年快乐！！',
+    132: '这家店超好吃',
+    133: '嘿嘿',
+    134: '被小狗团团围住',
+    135: '万圣节！',
+    136: '可爱捏',
+    137: '表情包出处',
+    138: '水灯节！',
+    139: '好美的仙女',
+    140: '亲亲！',
+    141: '希望所有的愿望都能成真',
+    142: '好美',
+    143: '多乐一岁啦！',
+    144: '黑五逛街',
+    145: '可爱',
+    146: '粉色的天空！',
+    147: '可爱',
+    148: '一起来看流星雨！',
+    149: '狗多乐',
+    150: '你怎么把脸蒙上了',
+    151: '多乐和星星',
+    152: '在韩国转机13个小时，太累了',
+    153: '可爱捏，圣诞快乐！'
+    
+    // 为所有照片初始化placeholder
+};
+// 初始化所有照片的placeholder字幕（使用照片编号作为key）
+PHOTO_FILES.forEach((filename, index) => {
+    const photoNum = index + 1;
+    if (!PHOTO_CAPTIONS[photoNum]) {
+        PHOTO_CAPTIONS[photoNum] = `[字幕 ${photoNum}] 待填写照片字幕... 💕`;
+    }
+});
 
 let currentPhotoIndex = 0;
 let isAutoPlaying = true;
 let autoPlayTimer = null;
 
-// 照片特殊日期和消息配置
-const photoMilestones = {
-    1: { day: '第 1 天', message: '我们相遇的那一天 🌸' },
-    50: { day: '第 50 天', message: '越来越喜欢你 💕' },
-    100: { day: '第 100 天', message: '确认心意，你就是我要找的人 💗' },
-    150: { day: '第 150 天', message: '每一天都想见到你 🐕' },
-    200: { day: '第 200 天', message: '第一次一起旅行 ✈️' },
-    250: { day: '第 250 天', message: '有你的日子都是晴天 ☀️' },
-    300: { day: '第 300 天', message: '习惯了有你的每一天 🌈' },
-    365: { day: '第 365 天', message: '一周年纪念！感谢有你 🎂' },
-    400: { day: '第 400 天', message: '爱你的心从未改变 💖' },
-    500: { day: '第 500 天', message: '约定未来，一起走下去 💍' },
-    600: { day: '第 600 天', message: '感谢每一个有你的日子 🌟' },
-    700: { day: '第 700 天', message: '圣诞快乐！我最爱的你 🎄' },
-    750: { day: '第 750 天', message: '新年快乐！2026我们继续 🎆' },
-    800: { day: '第 800 天', message: '800天纪念！我爱你！💕🐕💕' }
-};
+// 照片日期缓存（避免重复解析）
+const photoDateCache = {};
+
+/**
+ * 从文件名解析日期
+ * 文件名格式：MMDD_后缀.png 或 MMDD.png
+ * 例如：0108_1.png -> 1月8日, 1226_1.png -> 12月26日
+ */
+function parseDateFromFilename(filename) {
+    // 如果已缓存，直接返回
+    if (photoDateCache[filename]) {
+        return photoDateCache[filename];
+    }
+    
+    let month, day;
+    
+    // 处理特殊文件名（IMG_开头的等）
+    if (filename.startsWith('IMG_')) {
+        // 无法解析，返回null
+        photoDateCache[filename] = null;
+        return null;
+    }
+    
+    // 提取前4位数字（月日）
+    const match = filename.match(/^(\d{2})(\d{2})/);
+    if (match) {
+        month = parseInt(match[1], 10);
+        day = parseInt(match[2], 10);
+        
+        // 验证月日有效性
+        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+            // 所有照片都是2025年的
+            const year = 2025;
+            const date = new Date(year, month - 1, day);
+            // 计算这是在一起的哪一天（从2023-10-19开始）
+            const daysSinceStart = Math.floor((date - START_DATE) / (1000 * 60 * 60 * 24));
+            
+            const result = {
+                date: date,
+                month: month,
+                day: day,
+                year: year,
+                // 计算这是在一起的哪一天
+                daysSinceStart: daysSinceStart
+            };
+            
+            photoDateCache[filename] = result;
+            return result;
+        }
+    }
+    
+    // 无法解析
+    photoDateCache[filename] = null;
+    return null;
+}
 
 function initPhotoSlideshow() {
     const mainPhoto = document.getElementById('main-photo');
@@ -463,12 +819,10 @@ function initPhotoSlideshow() {
     const nextBtn = document.getElementById('next-photo');
     const autoplayBtn = document.getElementById('toggle-autoplay');
     const thumbnailContainer = document.getElementById('thumbnails');
+    const photoFrame = mainPhoto.parentElement;
     
     // 生成缩略图（只显示部分，循环滚动）
     generateThumbnails(thumbnailContainer);
-    
-    // 初始化里程碑按钮
-    initMilestoneButtons();
     
     // 显示第一张照片
     updatePhoto(0);
@@ -513,11 +867,43 @@ function initPhotoSlideshow() {
         }
     });
     
+    // 触摸滑动支持（移动端）
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    photoFrame.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    photoFrame.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50; // 最小滑动距离
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // 向左滑动，下一张
+                currentPhotoIndex = (currentPhotoIndex + 1) % TOTAL_PHOTOS;
+                updatePhoto(currentPhotoIndex);
+                resetAutoPlay();
+            } else {
+                // 向右滑动，上一张
+                currentPhotoIndex = (currentPhotoIndex - 1 + TOTAL_PHOTOS) % TOTAL_PHOTOS;
+                updatePhoto(currentPhotoIndex);
+                resetAutoPlay();
+            }
+        }
+    }
+    
     // 开始自动播放
     startAutoPlay();
     
     // 点击主照片打开大图
-    mainPhoto.parentElement.addEventListener('click', () => {
+    photoFrame.addEventListener('click', () => {
         openPhotoViewer(currentPhotoIndex);
     });
 }
@@ -537,7 +923,8 @@ function updatePhoto(index) {
     
     setTimeout(() => {
         // 更新照片源
-        mainPhoto.src = `photos/${photoNum}.jpg`;
+        const photoFilename = PHOTO_FILES[index] || PHOTO_FILES[0];
+        mainPhoto.src = `photos/${photoFilename}`;
         mainPhoto.onerror = function() {
             this.src = `https://via.placeholder.com/800x600/FFB6C1/FFF?text=照片${photoNum}`;
         };
@@ -545,15 +932,42 @@ function updatePhoto(index) {
         // 更新计数器
         photoCounter.textContent = `${photoNum} / ${TOTAL_PHOTOS}`;
         
-        // 更新日期和消息
-        const milestone = photoMilestones[photoNum];
-        if (milestone) {
-            currentDay.textContent = milestone.day;
-            currentDay.style.background = 'linear-gradient(135deg, var(--pink-heart), var(--pink-main))';
-            currentDay.style.color = 'white';
-            photoMessage.textContent = milestone.message;
+        // 从文件名解析日期
+        const dateInfo = parseDateFromFilename(photoFilename);
+        
+        // 获取照片字幕（优先使用配置的字幕，使用照片编号作为key）
+        const photoCaption = PHOTO_CAPTIONS[photoNum] || `[字幕 ${photoNum}] 待填写照片字幕... 💕`;
+        
+        // 更新照片上的字幕覆盖层
+        const photoCaptionOverlay = document.getElementById('photo-caption-overlay');
+        if (photoCaptionOverlay) {
+            photoCaptionOverlay.textContent = photoCaption;
+        }
+        
+        if (dateInfo) {
+            // 显示具体月日
+            currentDay.textContent = `${dateInfo.month}月${dateInfo.day}日`;
+            
+            // 检查是否是特殊里程碑日期
+            const daysSinceStart = dateInfo.daysSinceStart;
+            
+            // 普通日期样式
+            currentDay.style.background = 'linear-gradient(135deg, var(--star-yellow), var(--moon-cream))';
+            currentDay.style.color = 'var(--text-dark)';
+            
+            // 显示在一起多少天（恢复原来的逻辑）
+            if (daysSinceStart > 0 && daysSinceStart <= 1000) {
+                photoMessage.textContent = `在一起的第 ${daysSinceStart} 天 💕`;
+            } else if (daysSinceStart <= 0) {
+                // 日期在开始日期之前，只显示日期
+                photoMessage.textContent = getRandomMessage();
+            } else {
+                // 天数过大，可能年份判断有误，只显示日期
+                photoMessage.textContent = getRandomMessage();
+            }
         } else {
-            currentDay.textContent = `第 ${photoNum} 天`;
+            // 无法解析日期，使用默认显示
+            currentDay.textContent = `照片 ${photoNum}`;
             currentDay.style.background = 'linear-gradient(135deg, var(--star-yellow), var(--moon-cream))';
             currentDay.style.color = 'var(--text-dark)';
             photoMessage.textContent = getRandomMessage();
@@ -602,7 +1016,9 @@ function generateThumbnails(container) {
             const thumb = document.createElement('div');
             thumb.className = 'thumbnail';
             thumb.dataset.index = photoIndex;
-            thumb.innerHTML = `<img src="photos/${photoIndex + 1}.jpg" alt="照片${photoIndex + 1}" onerror="this.src='https://via.placeholder.com/100x100/FFB6C1/FFF?text=${photoIndex + 1}'">`;
+            
+            const thumbFilename = PHOTO_FILES[photoIndex] || PHOTO_FILES[0];
+            thumb.innerHTML = `<img src="photos/${thumbFilename}" alt="照片${photoIndex + 1}" onerror="this.src='https://via.placeholder.com/100x100/FFB6C1/FFF?text=${photoIndex + 1}'">`;
             
             thumb.addEventListener('click', () => {
                 currentPhotoIndex = photoIndex;
@@ -625,23 +1041,7 @@ function updateThumbnailHighlight(index) {
     });
 }
 
-function initMilestoneButtons() {
-    const buttons = document.querySelectorAll('.milestone-btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const day = parseInt(btn.dataset.day);
-            if (day <= TOTAL_PHOTOS) {
-                currentPhotoIndex = day - 1;
-                updatePhoto(currentPhotoIndex);
-                resetAutoPlay();
-                
-                // 滚动到照片区域
-                document.getElementById('memories').scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    });
-    
-}
+// 里程碑按钮功能已删除，改为滚动箭头
 
 function startAutoPlay() {
     if (autoPlayTimer) clearInterval(autoPlayTimer);
@@ -672,7 +1072,8 @@ function openPhotoViewer(index) {
     const viewerImage = document.getElementById('photo-viewer-image');
     const closeBtn = viewer.querySelector('.close-btn');
     
-    viewerImage.src = `photos/${index + 1}.jpg`;
+    const photoFilename = PHOTO_FILES[index] || PHOTO_FILES[0];
+    viewerImage.src = `photos/${photoFilename}`;
     viewerImage.onerror = function() {
         this.src = `https://via.placeholder.com/1200x800/FFB6C1/FFF?text=照片${index + 1}`;
     };
@@ -719,8 +1120,10 @@ function createFloatingPhoto(container, index) {
     const photo = document.createElement('div');
     photo.className = 'floating-photo';
     
-    const randomPhotoNum = Math.floor(Math.random() * TOTAL_PHOTOS) + 1;
-    photo.innerHTML = `<img src="photos/${randomPhotoNum}.jpg" alt="" onerror="this.parentElement.style.display='none'">`;
+    const randomPhotoIndex = Math.floor(Math.random() * TOTAL_PHOTOS);
+    const randomPhotoFilename = PHOTO_FILES[randomPhotoIndex] || PHOTO_FILES[0];
+    
+    photo.innerHTML = `<img src="photos/${randomPhotoFilename}" alt="" onerror="this.parentElement.style.display='none'">`;
     
     // 随机位置
     const positions = [
@@ -740,8 +1143,10 @@ function createFloatingPhoto(container, index) {
     
     // 定期更换浮动照片
     setInterval(() => {
-        const newPhotoNum = Math.floor(Math.random() * TOTAL_PHOTOS) + 1;
-        photo.querySelector('img').src = `photos/${newPhotoNum}.jpg`;
+        const newPhotoIndex = Math.floor(Math.random() * TOTAL_PHOTOS);
+        const newPhotoFilename = PHOTO_FILES[newPhotoIndex] || PHOTO_FILES[0];
+        
+        photo.querySelector('img').src = `photos/${newPhotoFilename}`;
     }, 10000 + index * 2000);
 }
 
