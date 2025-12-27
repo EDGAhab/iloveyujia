@@ -1,18 +1,4 @@
 {
-  "version": 2,
-  "name": "iloveyujia",
-  "builds": [
-    {
-      "src": "**/*",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/:path*",
-      "dest": "/:path*"
-    }
-  ],
   "headers": [
     {
       "source": "/photos/:path*",
