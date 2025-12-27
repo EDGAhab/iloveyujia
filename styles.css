@@ -253,24 +253,28 @@ body::after {
     margin: 0 auto;
     margin-top: 55vh;
     perspective: 1500px;
+    background: url('letteropening.gif') center center / cover no-repeat;
+    border-radius: 20px;
+    border: 4px solid white;
+    overflow: visible;
 }
 
 .envelope-body {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, var(--pink-light), var(--pink-main));
+    background: transparent;
     border-radius: 20px;
     box-shadow: 
         0 15px 40px rgba(255, 107, 138, 0.3),
         inset 0 0 30px rgba(255, 255, 255, 0.5);
     overflow: visible;
-    border: 4px solid white;
+    border: none;
     z-index: 1;
 }
 
 .envelope-body::before {
-    content: '🐕💕🐕';
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -286,12 +290,15 @@ body::after {
     left: 0;
     width: 100%;
     height: 110px;
-    background: linear-gradient(135deg, var(--sky-main), var(--sky-deep));
+    background: transparent;
     clip-path: polygon(0 0, 50% 100%, 100% 0);
     transform-origin: top center;
     transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     z-index: 5;
-    border: 4px solid white;
+    border-top: 4px solid white;
+    border-left: 4px solid white;
+    border-right: 4px solid white;
+    box-sizing: border-box;
 }
 
 .envelope.open .envelope-flap {
@@ -328,14 +335,67 @@ body::after {
     left: 0;
     width: 100%;
     height: 100%;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 38px,
-        rgba(255, 182, 200, 0.12) 38px,
-        rgba(255, 182, 200, 0.12) 39px
-    );
+    background: 
+        /* 信纸横线 */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 38px,
+            rgba(255, 182, 200, 0.12) 38px,
+            rgba(255, 182, 200, 0.12) 39px
+        ),
+        /* 背景水印图案 - 柔和渐变 */
+        radial-gradient(circle at 20% 30%, rgba(255, 182, 200, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(181, 226, 234, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255, 229, 102, 0.05) 0%, transparent 60%),
+        /* 纸张纹理效果 */
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 2px,
+            rgba(255, 255, 255, 0.03) 2px,
+            rgba(255, 255, 255, 0.03) 4px
+        );
     pointer-events: none;
+    border-radius: 20px;
+}
+
+/* 信件背景装饰元素 - 可爱图案 */
+.letter::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        /* 左上角装饰 */
+        radial-gradient(circle at 8% 8%, rgba(255, 107, 138, 0.15) 0%, rgba(255, 107, 138, 0.15) 3%, transparent 3%),
+        /* 右上角装饰 */
+        radial-gradient(circle at 92% 8%, rgba(181, 226, 234, 0.15) 0%, rgba(181, 226, 234, 0.15) 3%, transparent 3%),
+        /* 左下角装饰 */
+        radial-gradient(circle at 8% 92%, rgba(255, 229, 102, 0.15) 0%, rgba(255, 229, 102, 0.15) 3%, transparent 3%),
+        /* 右下角装饰 */
+        radial-gradient(circle at 92% 92%, rgba(255, 182, 200, 0.15) 0%, rgba(255, 182, 200, 0.15) 3%, transparent 3%),
+        /* 中间装饰点 */
+        radial-gradient(circle at 50% 30%, rgba(255, 107, 138, 0.08) 0%, rgba(255, 107, 138, 0.08) 2%, transparent 2%),
+        radial-gradient(circle at 30% 60%, rgba(181, 226, 234, 0.08) 0%, rgba(181, 226, 234, 0.08) 2%, transparent 2%),
+        radial-gradient(circle at 70% 60%, rgba(255, 229, 102, 0.08) 0%, rgba(255, 229, 102, 0.08) 2%, transparent 2%),
+        /* 边框装饰线 */
+        linear-gradient(90deg, transparent 0%, rgba(255, 182, 200, 0.2) 10%, transparent 20%),
+        linear-gradient(0deg, transparent 0%, rgba(181, 226, 234, 0.2) 10%, transparent 20%);
+    background-size: 
+        40px 40px, 40px 40px, 40px 40px, 40px 40px,
+        30px 30px, 30px 30px, 30px 30px,
+        100% 2px, 2px 100%;
+    background-position: 
+        0 0, 100% 0, 0 100%, 100% 100%,
+        50% 30%, 30% 60%, 70% 60%,
+        0 0, 0 0;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 20px;
 }
 
 .envelope.open .letter {
@@ -349,6 +409,86 @@ body::after {
     position: relative;
     z-index: 1;
     background: #FFFFFF;
+}
+
+/* 信件内容区域的装饰 - 四个角落 */
+.letter-content::before {
+    content: '💕';
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 32px;
+    opacity: 0.25;
+    animation: floatHeart 3s ease-in-out infinite;
+    z-index: 0;
+    filter: drop-shadow(0 2px 4px rgba(255, 107, 138, 0.3));
+}
+
+.letter-content::after {
+    content: '💖';
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    font-size: 30px;
+    opacity: 0.25;
+    animation: floatHeart 3s ease-in-out infinite 1.5s;
+    z-index: 0;
+    filter: drop-shadow(0 2px 4px rgba(255, 107, 138, 0.3));
+}
+
+/* 添加另外两个角落的装饰 */
+.letter-text::before {
+    content: '✨';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+    opacity: 0.25;
+    animation: floatHeart 3s ease-in-out infinite 0.75s;
+    z-index: 0;
+    filter: drop-shadow(0 2px 4px rgba(255, 229, 102, 0.3));
+}
+
+.letter-text::after {
+    content: '🌸';
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    font-size: 28px;
+    opacity: 0.25;
+    animation: floatHeart 3s ease-in-out infinite 2.25s;
+    z-index: 0;
+    filter: drop-shadow(0 2px 4px rgba(181, 226, 234, 0.3));
+}
+
+@keyframes floatHeart {
+    0%, 100% { 
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.2;
+    }
+    50% { 
+        transform: translateY(-10px) rotate(10deg);
+        opacity: 0.3;
+    }
+}
+
+/* 信件边框装饰 */
+.letter {
+    background: 
+        linear-gradient(#FFFFFF, #FFFFFF) padding-box,
+        linear-gradient(135deg, var(--pink-light), var(--sky-light), var(--pink-main), var(--star-yellow)) border-box;
+    border: 5px solid transparent;
+    position: relative;
+}
+
+.letter::before {
+    border-radius: 20px;
+}
+
+/* 添加角落装饰 */
+.letter-content::before,
+.letter-content::after {
+    pointer-events: none;
 }
 
 .letter-content h2 {
@@ -372,6 +512,7 @@ body::after {
     font-size: 20px;
     line-height: 2.2;
     color: #222;
+    position: relative;
 }
 
 .letter-text p {
@@ -1252,6 +1393,127 @@ footer p {
     border-radius: 25px;
     border: 8px solid white;
     box-shadow: 0 20px 60px rgba(255, 107, 138, 0.3);
+}
+
+/* 漫画查看器左右布局 */
+.comic-viewer-content {
+    max-width: 95%;
+    max-height: 95vh;
+    background: white;
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+}
+
+.comic-viewer-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.comic-viewer-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.comic-viewer-left img {
+    width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 25px;
+    border: 8px solid var(--pink-light);
+    box-shadow: 0 20px 60px rgba(255, 107, 138, 0.3);
+    background: white;
+}
+
+.comic-viewer-right {
+    flex: 0 0 350px;
+    background: linear-gradient(135deg, var(--pink-light), var(--sky-light));
+    border-radius: 25px;
+    padding: 25px;
+    border: 6px solid white;
+    box-shadow: 0 10px 30px rgba(91, 181, 197, 0.2);
+}
+
+.comic-photos-title {
+    font-family: var(--font-cute);
+    font-size: 24px;
+    color: var(--pink-heart);
+    text-align: center;
+    margin: 0 0 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 3px dashed var(--pink-main);
+}
+
+.comic-photos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.comic-photo-item {
+    aspect-ratio: 1;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.comic-photo-item:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 10px 25px rgba(255, 107, 138, 0.4);
+    border-color: var(--pink-main);
+}
+
+.comic-photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    border: none;
+    box-shadow: none;
+    max-height: none;
+}
+
+.no-photos-hint {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: var(--text-medium);
+    padding: 40px 20px;
+    background: white;
+    border-radius: 15px;
+    border: 3px dashed var(--pink-main);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .comic-viewer-layout {
+        flex-direction: column;
+    }
+    
+    .comic-viewer-right {
+        flex: 1;
+        width: 100%;
+    }
+    
+    .comic-photos-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .comic-photos-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .comic-viewer-content {
+        padding: 20px;
+    }
 }
 
 .close-btn {

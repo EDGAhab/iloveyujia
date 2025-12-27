@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initHearts();
     initNavigation();
     initCountdown();
+    initComics();  // 动态加载漫画
     initComicViewer();
     initPhotoSlideshow();  // 新的动态相册
     initSecretMessage();
@@ -36,7 +37,10 @@ function initEnvelopeAnimation() {
             isOpen = true;
             
             // 更新提示文字
-            document.querySelector('.click-hint').textContent = '再次点击进入我的世界 💕';
+            document.querySelector('.click-hint').textContent = '再次点击进入网站！ 💕';
+            
+            // 在打开信的一瞬间开始播放音乐
+            tryPlayMusic();
         } else {
             // 第二次点击：进入主页面
             overlay.classList.add('fade-out');
@@ -47,9 +51,6 @@ function initEnvelopeAnimation() {
                 
                 // 触发入场动画
                 triggerEntryAnimations();
-                
-                // 尝试播放音乐
-                tryPlayMusic();
             }, 1000);
         }
     });
@@ -211,72 +212,217 @@ function initCountdown() {
 }
 
 /* ========================================
+   动态加载漫画
+   ======================================== */
+// 漫画文件列表 - 根据comics文件夹中的实际文件更新
+const COMIC_FILES = [
+    'Weixin Image_20251226161036.jpg',
+    'Weixin Image_20251226161052.jpg',
+    'Weixin Image_20251226161057.jpg',
+    'Weixin Image_20251226161100.jpg',
+    'Weixin Image_20251226161103.jpg',
+    'Weixin Image_20251226161106.jpg',
+    'Weixin Image_20251226161110.jpg',
+    'Weixin Image_20251226161123.jpg',  // 漫画九移到第八位
+    'Weixin Image_20251226161114.jpg'  // 漫画八移到第九位
+];
+
+// 每个漫画对应的照片文件夹
+// 照片会自动从 comics/comic-X-photos/ 文件夹中加载
+// 请将照片命名为：1.jpg, 2.jpg, 3.jpg, 4.jpg 放在对应的文件夹中
+
+function initComics() {
+    const gallery = document.getElementById('comics-gallery');
+    if (!gallery) return;
+    
+    // 清空现有内容
+    gallery.innerHTML = '';
+    
+    // 为每个漫画文件创建卡片
+    COMIC_FILES.forEach((filename, index) => {
+        const comicCard = document.createElement('div');
+        comicCard.className = 'comic-card';
+        comicCard.setAttribute('data-index', index);
+        
+        comicCard.innerHTML = `
+            <div class="comic-frame">
+                <img src="comics/${filename}" alt="漫画 ${index + 1}" onerror="this.src='https://via.placeholder.com/400x500/FFE4E1/FF69B4?text=漫画${index + 1}'">
+            </div>
+        `;
+        
+        gallery.appendChild(comicCard);
+    });
+}
+
+/* ========================================
    漫画查看器
    ======================================== */
 function initComicViewer() {
-    const comicCards = document.querySelectorAll('.comic-card');
-    const viewer = document.getElementById('comic-viewer');
-    const viewerImage = document.getElementById('viewer-image');
-    const closeBtn = viewer.querySelector('.close-btn');
-    const prevBtn = document.getElementById('prev-comic');
-    const nextBtn = document.getElementById('next-comic');
-    
-    let currentIndex = 0;
-    const comicImages = [];
-    
-    // 收集所有漫画图片
-    comicCards.forEach((card, index) => {
-        const img = card.querySelector('img');
-        comicImages.push(img.src);
+    // 延迟初始化，确保漫画已加载
+    setTimeout(() => {
+        const comicCards = document.querySelectorAll('.comic-card');
+        const viewer = document.getElementById('comic-viewer');
+        const viewerImage = document.getElementById('viewer-image');
+        const closeBtn = viewer.querySelector('.close-btn');
+        const prevBtn = document.getElementById('prev-comic');
+        const nextBtn = document.getElementById('next-comic');
         
-        card.addEventListener('click', function() {
-            currentIndex = index;
-            showComic(currentIndex);
-            viewer.classList.add('active');
+        let currentIndex = 0;
+        const comicImages = [];
+        
+        // 收集所有漫画图片
+        comicCards.forEach((card, index) => {
+            const img = card.querySelector('img');
+            if (img) {
+                comicImages.push(img.src);
+                
+                card.addEventListener('click', function() {
+                    currentIndex = index;
+                    showComic(currentIndex);
+                    viewer.classList.add('active');
+                });
+            }
         });
-    });
-    
-    function showComic(index) {
-        viewerImage.src = comicImages[index];
-    }
-    
-    // 导航按钮
-    prevBtn.addEventListener('click', function() {
-        currentIndex = (currentIndex - 1 + comicImages.length) % comicImages.length;
-        showComic(currentIndex);
-    });
-    
-    nextBtn.addEventListener('click', function() {
-        currentIndex = (currentIndex + 1) % comicImages.length;
-        showComic(currentIndex);
-    });
-    
-    // 关闭按钮
-    closeBtn.addEventListener('click', function() {
-        viewer.classList.remove('active');
-    });
-    
-    // 点击背景关闭
-    viewer.addEventListener('click', function(e) {
-        if (e.target === viewer) {
-            viewer.classList.remove('active');
-        }
-    });
-    
-    // 键盘导航
-    document.addEventListener('keydown', function(e) {
-        if (!viewer.classList.contains('active')) return;
         
-        if (e.key === 'ArrowLeft') {
-            currentIndex = (currentIndex - 1 + comicImages.length) % comicImages.length;
-            showComic(currentIndex);
-        } else if (e.key === 'ArrowRight') {
-            currentIndex = (currentIndex + 1) % comicImages.length;
-            showComic(currentIndex);
-        } else if (e.key === 'Escape') {
-            viewer.classList.remove('active');
+        function showComic(index) {
+            if (comicImages[index]) {
+                // 显示漫画
+                viewerImage.src = comicImages[index];
+                
+                // 显示对应的照片
+                displayComicPhotos(index);
+            }
         }
-    });
+        
+        function displayComicPhotos(comicIndex) {
+            const photosGrid = document.getElementById('comic-photos-grid');
+            if (!photosGrid) return;
+            
+            // 清空现有照片
+            photosGrid.innerHTML = '';
+            
+            // 漫画索引从0开始，但文件夹编号从1开始
+            const comicNumber = comicIndex + 1;
+            const photoFolder = `comics/comic-${comicNumber}-photos/`;
+            
+            // 自动加载四张照片：1.jpg, 2.jpg, 3.jpg, 4.jpg
+            let loadedCount = 0;
+            let hasPhotos = false;
+            
+            for (let i = 1; i <= 4; i++) {
+                const photoPath = `${photoFolder}${i}.jpg`;
+                const photoItem = document.createElement('div');
+                photoItem.className = 'comic-photo-item';
+                
+                const img = document.createElement('img');
+                img.src = photoPath;
+                img.alt = `照片 ${i}`;
+                img.onclick = () => openPhotoInViewer(photoPath);
+                
+                // 检测图片是否加载成功
+                img.onload = function() {
+                    hasPhotos = true;
+                    loadedCount++;
+                };
+                
+                img.onerror = function() {
+                    // 如果图片不存在，隐藏这个位置
+                    photoItem.style.display = 'none';
+                };
+                
+                photoItem.appendChild(img);
+                photosGrid.appendChild(photoItem);
+            }
+            
+            // 如果所有照片都加载失败，显示提示
+            setTimeout(() => {
+                if (!hasPhotos) {
+                    photosGrid.innerHTML = '<p class="no-photos-hint">照片待添加 💕<br>请将照片放在 ' + photoFolder + ' 文件夹中</p>';
+                }
+            }, 500);
+        }
+        
+        // 在照片查看器中打开照片
+        window.openPhotoInViewer = function(photoPath) {
+            const photoViewer = document.getElementById('photo-viewer');
+            const photoViewerImage = document.getElementById('photo-viewer-image');
+            const closeBtn = photoViewer?.querySelector('.close-btn');
+            
+            if (photoViewer && photoViewerImage) {
+                photoViewerImage.src = photoPath;
+                photoViewerImage.onerror = function() {
+                    this.src = 'https://via.placeholder.com/1200x800/FFB6C1/FFF?text=照片';
+                };
+                photoViewer.classList.add('active');
+                
+                // 添加关闭功能
+                const closeViewer = () => {
+                    photoViewer.classList.remove('active');
+                };
+                
+                if (closeBtn) {
+                    closeBtn.onclick = closeViewer;
+                }
+                
+                photoViewer.onclick = (e) => {
+                    if (e.target === photoViewer) closeViewer();
+                };
+                
+                // ESC键关闭
+                const escHandler = (e) => {
+                    if (e.key === 'Escape' && photoViewer.classList.contains('active')) {
+                        closeViewer();
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
+            }
+        };
+        
+        // 导航按钮
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex - 1 + comicImages.length) % comicImages.length;
+                showComic(currentIndex);
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex + 1) % comicImages.length;
+                showComic(currentIndex);
+            });
+        }
+        
+        // 关闭按钮
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                viewer.classList.remove('active');
+            });
+        }
+        
+        // 点击背景关闭
+        viewer.addEventListener('click', function(e) {
+            if (e.target === viewer) {
+                viewer.classList.remove('active');
+            }
+        });
+        
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (!viewer.classList.contains('active')) return;
+            
+            if (e.key === 'ArrowLeft') {
+                currentIndex = (currentIndex - 1 + comicImages.length) % comicImages.length;
+                showComic(currentIndex);
+            } else if (e.key === 'ArrowRight') {
+                currentIndex = (currentIndex + 1) % comicImages.length;
+                showComic(currentIndex);
+            } else if (e.key === 'Escape') {
+                viewer.classList.remove('active');
+            }
+        });
+    }, 100);
 }
 
 /* ========================================
@@ -710,13 +856,32 @@ function tryPlayMusic() {
     const bgMusic = document.getElementById('bgMusic');
     const musicBtn = document.getElementById('music-toggle');
     
-    bgMusic.play().then(function() {
-        isPlaying = true;
-        musicBtn.textContent = '🔊';
-        musicBtn.classList.add('playing');
-    }).catch(function(error) {
-        console.log('自动播放被阻止，请点击音乐按钮播放');
-    });
+    // 确保音乐循环播放
+    bgMusic.loop = true;
+    // 设置音量（0.0 到 1.0）
+    bgMusic.volume = 0.5;
+    
+    // 尝试播放音乐
+    const playPromise = bgMusic.play();
+    
+    if (playPromise !== undefined) {
+        playPromise.then(function() {
+            // 播放成功
+            isPlaying = true;
+            if (musicBtn) {
+                musicBtn.textContent = '🔊';
+                musicBtn.classList.add('playing');
+            }
+            console.log('音乐开始播放');
+        }).catch(function(error) {
+            // 播放失败（可能是浏览器阻止自动播放）
+            console.log('自动播放被阻止，请点击音乐按钮播放', error);
+            // 如果自动播放失败，至少确保音乐按钮状态正确
+            if (musicBtn) {
+                musicBtn.textContent = '🎵';
+            }
+        });
+    }
 }
 
 /* ========================================
