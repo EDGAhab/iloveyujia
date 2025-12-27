@@ -1364,21 +1364,6 @@ function checkSpecialDates() {
     const today = new Date();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    
-    // 圣诞节
-    if (month === 12 && day === 25) {
-        showSpecialBanner('🎄 圣诞节快乐！愿这个特别的日子充满爱与温暖 🎄');
-    }
-    
-    // 800天纪念日
-    if (month === 12 && day === 27) {
-        showSpecialBanner('💕 今天是我们在一起的第800天！这是属于我们的特别日子 💕');
-    }
-    
-    // 新年
-    if (month === 1 && day === 1) {
-        showSpecialBanner('🎆 新年快乐！愿新的一年我们更加幸福 🎆');
-    }
 }
 
 function showSpecialBanner(message) {
