@@ -4,10 +4,14 @@
   "description": "800天浪漫纪念网站 - 献给我最爱的你",
   "scripts": {
     "start": "npx serve",
-    "dev": "npx serve -p 3000"
+    "dev": "npx serve -p 3000",
+    "compress": "node compress-images.js"
   },
   "keywords": ["love", "romantic", "anniversary", "800days"],
   "author": "Your Name",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "sharp": "^0.33.0"
+  }
 }
 
