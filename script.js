@@ -559,7 +559,7 @@ const PHOTO_FILES = [
     '0208_2.jpg', '0211_1.jpg', '0212_3.jpg', '0212_4.jpg', '0212_6.jpg', '0214.jpg', '0215_2.jpg', '0222_1.jpg',
     '0222_2.jpg', '0228.jpg', '0302.jpg', '0309_1.jpg', '0309_2.jpg', '0309_3.jpg', '0309_4.jpg', '0309_5.jpg',
     '0309_51.jpg', '0309_6.jpg', '0309_7.jpg', '0309_71.jpg', '0309_8.jpg', '0309_9.jpg', '0311_2.jpg', '0314_3.jpg',
-    '0318_1.jpg', '0319.jpg', '0320_4.jpg', '0321.jpg', '0324_1.jpg', '0325.jpg', '0328_11.jpg', '0328_2.jpg',
+    '0318_1.jpg', '0319.jpg', '0320_4.jpg', '0321.jpg', '0324_1.jpg', '0325.jpg', '0328_2.jpg', '0328_8.jpg',
     '0328_9.jpg', '0329_2.jpg', '0331_1743471649.jpg', '0405_1.jpg', '0405_4.jpg', '0405_5.jpg', '0405_7.jpg',
     '0405_8.jpg', '0405_9.jpg', '0406.jpg', '0407_1.jpg', '0407_2.jpg', '0412.jpg', '0414_1.jpg', '0426_1.jpg',
     '0426_4.jpg', '0512.jpg', '0516_2.jpg', '0517_4.jpg', '0519_1.jpg', '0519_2.jpg', '0519_4.jpg', '0519_5.jpg',
@@ -922,7 +922,18 @@ function initPhotoSlideshow() {
         if (isAutoPlaying) {
             autoplayBtn.textContent = '⏸️ 自动播放中';
             autoplayBtn.classList.add('playing');
-            startAutoPlay();
+            // 检查照片画廊是否可见，如果可见则立即开始播放
+            const memoriesSection = document.getElementById('memories');
+            if (memoriesSection) {
+                const rect = memoriesSection.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                if (isVisible) {
+                    startAutoPlay();
+                }
+                // 如果不可见，Intersection Observer 会在可见时自动开始
+            } else {
+                startAutoPlay();
+            }
         } else {
             autoplayBtn.textContent = '▶️ 点击播放';
             autoplayBtn.classList.remove('playing');
@@ -975,8 +986,34 @@ function initPhotoSlideshow() {
         }
     }
     
-    // 开始自动播放
-    startAutoPlay();
+    // 使用 Intersection Observer 检测照片画廊区域是否可见
+    // 只有当用户滚动到照片画廊时才开始自动播放
+    const memoriesSection = document.getElementById('memories');
+    if (memoriesSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // 照片画廊可见时，如果用户已启用自动播放，则开始播放
+                    if (isAutoPlaying) {
+                        startAutoPlay();
+                    }
+                } else {
+                    // 照片画廊不可见时，停止自动播放
+                    stopAutoPlay();
+                }
+            });
+        }, {
+            threshold: 0.3 // 当30%的区域可见时触发
+        });
+        
+        observer.observe(memoriesSection);
+    }
+    
+    // 不立即开始自动播放，等待用户滚动到照片画廊
+    // 初始状态：自动播放按钮显示为"点击播放"，但不会自动开始
+    isAutoPlaying = false;
+    autoplayBtn.textContent = '▶️ 点击播放';
+    autoplayBtn.classList.remove('playing');
     
     // 点击主照片打开大图
     photoFrame.addEventListener('click', () => {
