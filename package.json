@@ -6,7 +6,8 @@
     "start": "npx serve",
     "dev": "npx serve -p 3000",
     "compress": "node compress-images.js",
-    "compress-optimized": "node compress-images-optimized.js"
+    "compress-optimized": "node compress-images-optimized.js",
+    "compress-remaining": "node compress-remaining.js"
   },
   "keywords": ["love", "romantic", "anniversary", "800days"],
   "author": "Your Name",
