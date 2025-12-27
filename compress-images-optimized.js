@@ -21,7 +21,7 @@ const CONFIG = {
     // 要压缩的文件夹
     folders: ['photos', 'comics'],
     // 最大文件大小 (MB)，超过此大小的文件会被压缩
-    maxSizeMB: 0.1  // 降低阈值，处理更多文件
+    maxSizeMB: 0.5
 };
 
 // 统计信息
