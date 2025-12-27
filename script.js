@@ -326,7 +326,7 @@ function initComics() {
         
         comicCard.innerHTML = `
             <div class="comic-frame">
-                <img src="comics/${filename}" alt="漫画 ${index + 1}" onerror="this.src='https://via.placeholder.com/400x500/FFE4E1/FF69B4?text=漫画${index + 1}'">
+                <img src="comics/${filename}" alt="漫画 ${index + 1}" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/400x500/FFE4E1/FF69B4?text=漫画${index + 1}'">
             </div>
         `;
         
@@ -757,6 +757,48 @@ let autoPlayTimer = null;
 // 照片日期缓存（避免重复解析）
 const photoDateCache = {};
 
+// 图片预加载缓存
+const imagePreloadCache = new Map();
+
+/**
+ * 预加载图片
+ */
+function preloadImage(src) {
+    if (imagePreloadCache.has(src)) {
+        return imagePreloadCache.get(src);
+    }
+    
+    const img = new Image();
+    const promise = new Promise((resolve, reject) => {
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+    });
+    
+    imagePreloadCache.set(src, promise);
+    return promise;
+}
+
+/**
+ * 预加载相邻图片（当前图片的前一张和后一张）
+ */
+function preloadAdjacentPhotos(currentIndex) {
+    const preloadIndices = [
+        (currentIndex - 1 + TOTAL_PHOTOS) % TOTAL_PHOTOS,
+        (currentIndex + 1) % TOTAL_PHOTOS
+    ];
+    
+    preloadIndices.forEach(index => {
+        const photoFilename = PHOTO_FILES[index];
+        if (photoFilename) {
+            const photoPath = `photos/${photoFilename}`;
+            preloadImage(photoPath).catch(() => {
+                // 预加载失败不影响主流程
+            });
+        }
+    });
+}
+
 /**
  * 从文件名解析日期
  * 文件名格式：MMDD_后缀.png 或 MMDD.png
@@ -824,8 +866,22 @@ function initPhotoSlideshow() {
     // 生成缩略图（只显示部分，循环滚动）
     generateThumbnails(thumbnailContainer);
     
-    // 显示第一张照片
-    updatePhoto(0);
+    // 预加载第一张照片和相邻照片
+    const firstPhotoFilename = PHOTO_FILES[0];
+    if (firstPhotoFilename) {
+        preloadImage(`photos/${firstPhotoFilename}`).then(() => {
+            // 第一张照片加载完成后显示
+            updatePhoto(0);
+        }).catch(() => {
+            // 即使预加载失败也显示
+            updatePhoto(0);
+        });
+        // 预加载相邻照片
+        preloadAdjacentPhotos(0);
+    } else {
+        // 显示第一张照片
+        updatePhoto(0);
+    }
     
     // 上一张/下一张按钮
     prevBtn.addEventListener('click', () => {
@@ -924,10 +980,25 @@ function updatePhoto(index) {
     setTimeout(() => {
         // 更新照片源
         const photoFilename = PHOTO_FILES[index] || PHOTO_FILES[0];
-        mainPhoto.src = `photos/${photoFilename}`;
+        const photoPath = `photos/${photoFilename}`;
+        
+        // 使用预加载的图片（如果已加载）
+        if (imagePreloadCache.has(photoPath)) {
+            imagePreloadCache.get(photoPath).then(img => {
+                mainPhoto.src = img.src;
+            }).catch(() => {
+                mainPhoto.src = photoPath;
+            });
+        } else {
+            mainPhoto.src = photoPath;
+        }
+        
         mainPhoto.onerror = function() {
             this.src = `https://via.placeholder.com/800x600/FFB6C1/FFF?text=照片${photoNum}`;
         };
+        
+        // 预加载相邻图片
+        preloadAdjacentPhotos(index);
         
         // 更新计数器
         photoCounter.textContent = `${photoNum} / ${TOTAL_PHOTOS}`;
@@ -1018,7 +1089,7 @@ function generateThumbnails(container) {
             thumb.dataset.index = photoIndex;
             
             const thumbFilename = PHOTO_FILES[photoIndex] || PHOTO_FILES[0];
-            thumb.innerHTML = `<img src="photos/${thumbFilename}" alt="照片${photoIndex + 1}" onerror="this.src='https://via.placeholder.com/100x100/FFB6C1/FFF?text=${photoIndex + 1}'">`;
+            thumb.innerHTML = `<img src="photos/${thumbFilename}" alt="照片${photoIndex + 1}" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/100x100/FFB6C1/FFF?text=${photoIndex + 1}'">`;
             
             thumb.addEventListener('click', () => {
                 currentPhotoIndex = photoIndex;
@@ -1123,7 +1194,7 @@ function createFloatingPhoto(container, index) {
     const randomPhotoIndex = Math.floor(Math.random() * TOTAL_PHOTOS);
     const randomPhotoFilename = PHOTO_FILES[randomPhotoIndex] || PHOTO_FILES[0];
     
-    photo.innerHTML = `<img src="photos/${randomPhotoFilename}" alt="" onerror="this.parentElement.style.display='none'">`;
+    photo.innerHTML = `<img src="photos/${randomPhotoFilename}" alt="" loading="lazy" decoding="async" onerror="this.parentElement.style.display='none'">`;
     
     // 随机位置
     const positions = [
